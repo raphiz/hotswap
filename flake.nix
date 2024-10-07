@@ -15,7 +15,7 @@
     #required for building linux container images
     #otherwise `nix flake show --impure` fails to evaluate
     nix2container.url = "github:nlewo/nix2container";
-    nix-mk-shell-bin.url = "github:rrbutani/nix-mk-shell-bin";
+    mk-shell-bin.url = "github:rrbutani/nix-mk-shell-bin";
   };
 
   outputs = inputs @ {
