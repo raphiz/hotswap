@@ -1,46 +1,60 @@
 {
+  /*
+  This flake contains all boilerplate and rarely needs to be looked at
+  Actual configuration is done in the following, externalized files:
+
+  ./nix/configuration.ci.nix: minimal dependencies required on CI system
+  ./nix/configuration.dev.nix: dependencies for local development
+  ./nix/overlay.nix: customization of nixpkgs
+  */
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/master";
+    devenv.url = "github:cachix/devenv";
+
+    #required for building linux container images
+    #otherwise `nix flake show --impure` fails to evaluate
+    nix2container.url = "github:nlewo/nix2container";
+    nix-mk-shell-bin.url = "github:rrbutani/nix-mk-shell-bin";
   };
 
-  outputs = {
+  outputs = inputs @ {
     self,
-    nixpkgs,
+    flake-parts,
     ...
-  }: let
-    systems = ["x86_64-linux" "x86_64-darwin" "aarch64-darwin" "aarch64-linux"];
-    forAllSystems = function: nixpkgs.lib.genAttrs systems (system: function nixpkgs.legacyPackages.${system});
-  in {
-    devShells = forAllSystems (pkgs: let
-      jdk = pkgs.jdk21_headless;
+  }:
+    flake-parts.lib.mkFlake {inherit inputs;} {
+      systems = ["x86_64-linux" "x86_64-darwin" "aarch64-darwin" "aarch64-linux"];
+      imports = [inputs.devenv.flakeModule];
+      perSystem = {
+        config,
+        self',
+        inputs',
+        pkgs,
+        system,
+        ...
+        # Per-system attributes can be defined here. The self' and inputs'
+        # module parameters provide easy access to attributes of the same
+        # system. Documentation: https://flake.parts/module-arguments.html
+        # inputs': https://flake.parts/module-arguments.html#inputs
+        # self': https://flake.parts/module-arguments.html#self
+      }: {
+        # define development shells
+        devenv.shells.ci = import ./nix/configuration.ci.nix;
+        devenv.shells.dev = import ./nix/configuration.dev.nix;
+        devShells.default = self'.devShells.dev;
 
-      # use same gradle as the gradle wrapper
-      gradle = pkgs.callPackage (pkgs.gradleGen (let
-        wrapperProperties = builtins.readFile ./gradle/wrapper/gradle-wrapper.properties;
-        lines = pkgs.lib.strings.splitString "\n" wrapperProperties;
-      in {
-        defaultJava = jdk;
-
-        # version from gradle-wrapper.properties
-        version = let
-          distributionUrlLine = builtins.head (builtins.filter (line: line != null && builtins.match "distributionUrl=.*" line != null) lines);
-          versionMatch = builtins.match ".*/gradle-([^-]*)-bin.zip" distributionUrlLine;
-          versionValue = builtins.elemAt versionMatch 0;
-        in
-          versionValue;
-
-        # hash from gradle-wrapper.properties
-        hash = let
-          sha256SumLine = builtins.head (builtins.filter (line: line != null && builtins.match "distributionSha256Sum=.*" line != null) lines);
-          sha256Hex = builtins.elemAt (builtins.match "distributionSha256Sum=(.*)" sha256SumLine) 0;
-          formattedHash = "sha256:" + sha256Hex;
-        in
-          formattedHash;
-      })) {};
-    in {
-      default = pkgs.mkShellNoCC {
-        buildInputs = [jdk gradle];
+        # The following snippet is needed when using overlays.
+        # The overlay can be inlined or referenced from flake.overlays.*
+        # Explanation: https://flake.parts/overlays.html#consuming-an-overlay
+        _module.args.pkgs = import self.inputs.nixpkgs {
+          inherit system;
+          overlays = [self.overlays.default];
+          config.allowUnfree = true;
+        };
       };
-    });
-  };
+      flake = {
+        overlays.default = import ./nix/overlay.nix;
+      };
+    };
 }
