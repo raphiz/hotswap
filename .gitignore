@@ -2,3 +2,4 @@
 build
 .pre-commit-config.yaml
 .devenv
+.idea
