@@ -1,3 +1,3 @@
 final: prev: {
-  jdk = prev.jdk21_headless;
+  jdk = prev.jdk17_headless;
 }
