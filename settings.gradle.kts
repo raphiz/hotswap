@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "zack-bum"
+include("lib")
