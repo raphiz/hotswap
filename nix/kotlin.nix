@@ -32,4 +32,12 @@
         formattedHash;
     })) {};
   };
+
+  pre-commit.hooks.ktlint = {
+    enable = true;
+    name = "ktlint";
+    entry = "${pkgs.ktlint}/bin/ktlint --format";
+    files = "\\.(kt|kts)$";
+    language = "system";
+  };
 }
