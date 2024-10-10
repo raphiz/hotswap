@@ -6,7 +6,6 @@ import strikt.api.Assertion
 import strikt.api.expectThat
 import strikt.assertions.containsExactly
 import java.nio.file.Path
-import java.nio.file.PathMatcher
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.*
 
@@ -127,61 +126,14 @@ class FileSystemWatcherTest {
         )
     }
 
-    @Test
-    fun `it only watches files that match a certain glob`() {
-        val workspace = createTempDirectory()
-        val included = workspace.resolve("included.txt").createFile()
-        val excluded = workspace.resolve("excluded.txt").createFile()
-
-        workspace.watchPerformAssertUntil(
-            patterns = setOf("included*").asPathMatchers(),
-            action = {
-                excluded.writeText("ignored")
-                included.writeText("not ingored")
-            },
-            assertion = { changedPaths ->
-                expectThat(changedPaths).containsExactly(Pair(included, EventType.MODIFIED))
-            },
-        )
-    }
-
-    @Test
-    fun `it only watches directories that match a certain glob`() {
-        val workspace = createTempDirectory()
-        val included =
-            workspace
-                .resolve("included/sub/path")
-                .createDirectories()
-                .resolve("file.txt")
-                .createFile()
-        val excluded =
-            workspace
-                .resolve("excluded/sub/path")
-                .createDirectories()
-                .resolve("file.txt")
-                .createFile()
-
-        workspace.watchPerformAssertUntil(
-            patterns = setOf("included/**/*.txt").asPathMatchers(),
-            action = {
-                excluded.writeText("ignored")
-                included.writeText("not ingored")
-            },
-            assertion = { changedPaths ->
-                expectThat(changedPaths).containsExactly(Pair(included, EventType.MODIFIED))
-            },
-        )
-    }
-
     private fun Path.watchPerformAssertUntil(
         action: () -> Unit,
         assertion: (Set<Pair<Path, EventType>>) -> Unit,
-        patterns: Iterable<PathMatcher> = setOf("**").asPathMatchers(),
     ) {
         val changedPaths = mutableListOf<Pair<Path, EventType>>()
 
         val watcher =
-            Watcher(this, patterns) { path, eventType ->
+            Watcher(this) { path, eventType ->
                 changedPaths.add(Pair(path, eventType))
             }
         watcher.start()

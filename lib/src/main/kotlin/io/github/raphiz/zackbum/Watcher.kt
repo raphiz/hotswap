@@ -7,11 +7,9 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.io.path.isDirectory
 import kotlin.io.path.isHidden
-import kotlin.io.path.relativeTo
 
 internal class Watcher(
     private val workspace: Path,
-    private val pathMatchers: Iterable<PathMatcher>,
     private val onChange: (Path, EventType) -> Unit,
 ) {
     private val logger = logger()
@@ -73,9 +71,7 @@ internal class Watcher(
                             changedFile.watchRecursively(notify = true)
                         } else {
                             logger.debug("Received event {} for file {}", event.kind().name(), changedFile)
-                            if (pathMatchers.anyMatches(changedFile.relativeTo(workspace))) {
-                                onChange(changedFile, event.toEventType())
-                            }
+                            onChange(changedFile, event.toEventType())
                         }
                     }
                 }
@@ -115,7 +111,3 @@ private fun WatchEvent<*>.toEventType() =
         StandardWatchEventKinds.ENTRY_CREATE -> EventType.CREATED
         else -> throw IllegalStateException("Unknown event kind ${kind()} received")
     }
-
-fun Iterable<String>.asPathMatchers(): List<PathMatcher> = map { FileSystems.getDefault().getPathMatcher("glob:$it") }
-
-fun Iterable<PathMatcher>.anyMatches(path: Path): Boolean = any { it.matches(path) }
