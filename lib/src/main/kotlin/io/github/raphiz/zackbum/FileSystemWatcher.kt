@@ -17,10 +17,6 @@ internal class FileSystemWatcher(
 
     private val watchService = FileSystems.getDefault().newWatchService()
 
-    init {
-        workspace.watchRecursively()
-    }
-
     private fun Path.watchRecursively(notify: Boolean = false) {
         Files.walkFileTree(
             this,
@@ -56,6 +52,7 @@ internal class FileSystemWatcher(
 
     fun start() {
         logger.debug("Starting watch service on workspace {}", workspace.toAbsolutePath())
+        workspace.watchRecursively()
         active.set(true)
         Executors.newSingleThreadExecutor().submit {
             Thread.currentThread().setName("filewatch-thread")
