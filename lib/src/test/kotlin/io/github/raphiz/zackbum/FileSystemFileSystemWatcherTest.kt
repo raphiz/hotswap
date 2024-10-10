@@ -9,7 +9,7 @@ import java.nio.file.Path
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.*
 
-class FileSystemWatcherTest {
+class FileSystemFileSystemWatcherTest {
     @Test
     fun `it notifies when a new file is created`() {
         val workspace = createTempDirectory()
@@ -132,15 +132,15 @@ class FileSystemWatcherTest {
     ) {
         val changedPaths = mutableListOf<Pair<Path, EventType>>()
 
-        val watcher =
-            Watcher(this) { path, eventType ->
+        val fileSystemWatcher =
+            FileSystemWatcher(this) { path, eventType ->
                 changedPaths.add(Pair(path, eventType))
             }
-        watcher.start()
+        fileSystemWatcher.start()
         action()
 
         waitUntil { assertion(changedPaths.toSet()) }
-        watcher.stop()
+        fileSystemWatcher.stop()
     }
 
     private fun waitUntil(assertion: () -> Unit) {

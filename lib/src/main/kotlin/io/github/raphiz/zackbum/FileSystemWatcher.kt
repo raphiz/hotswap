@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.io.path.isDirectory
 import kotlin.io.path.isHidden
 
-internal class Watcher(
+internal class FileSystemWatcher(
     private val workspace: Path,
     private val onChange: (Path, EventType) -> Unit,
 ) {
