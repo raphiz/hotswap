@@ -10,7 +10,7 @@ import kotlin.io.path.isHidden
 
 internal class FileSystemWatcher(
     private val workspace: Path,
-    private val onChange: (Path, EventType) -> Unit,
+    private val onChange: (FileSystemEvent) -> Unit,
 ) {
     private val logger = logger()
     private val active = AtomicBoolean(false)
@@ -26,7 +26,7 @@ internal class FileSystemWatcher(
                     attrs: BasicFileAttributes,
                 ): FileVisitResult {
                     if (notify) {
-                        onChange(file, EventType.CREATED)
+                        onChange(FileSystemEvent(file, EventType.CREATED))
                     }
                     return FileVisitResult.CONTINUE
                 }
@@ -68,7 +68,7 @@ internal class FileSystemWatcher(
                             changedFile.watchRecursively(notify = true)
                         } else {
                             logger.debug("Received event {} for file {}", event.kind().name(), changedFile)
-                            onChange(changedFile, event.toEventType())
+                            onChange(FileSystemEvent(changedFile, event.toEventType()))
                         }
                     }
                 }
@@ -100,6 +100,11 @@ enum class EventType {
     MODIFIED,
     DELETED,
 }
+
+data class FileSystemEvent(
+    val path: Path,
+    val eventType: EventType,
+)
 
 private fun WatchEvent<*>.toEventType() =
     when (kind()) {

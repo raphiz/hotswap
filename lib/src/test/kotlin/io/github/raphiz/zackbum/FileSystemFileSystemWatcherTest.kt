@@ -90,7 +90,7 @@ class FileSystemFileSystemWatcherTest {
                 file.writeText("changed")
             },
             { changedPaths ->
-                expectThat(changedPaths).containsExactly(Pair(file, EventType.MODIFIED))
+                expectThat(changedPaths).containsExactly(FileSystemEvent(file, EventType.MODIFIED))
             },
         )
     }
@@ -106,7 +106,7 @@ class FileSystemFileSystemWatcherTest {
                 file.deleteIfExists()
             },
             { changedPaths ->
-                expectThat(changedPaths).containsExactly(Pair(file, EventType.DELETED))
+                expectThat(changedPaths).containsExactly(FileSystemEvent(file, EventType.DELETED))
             },
         )
     }
@@ -121,21 +121,18 @@ class FileSystemFileSystemWatcherTest {
                 directory.deleteIfExists()
             },
             { changedPaths ->
-                expectThat(changedPaths).containsExactly(Pair(directory, EventType.DELETED))
+                expectThat(changedPaths).containsExactly(FileSystemEvent(directory, EventType.DELETED))
             },
         )
     }
 
     private fun Path.watchPerformAssertUntil(
         action: () -> Unit,
-        assertion: (Set<Pair<Path, EventType>>) -> Unit,
+        assertion: (Set<FileSystemEvent>) -> Unit,
     ) {
-        val changedPaths = mutableListOf<Pair<Path, EventType>>()
+        val changedPaths = mutableListOf<FileSystemEvent>()
 
-        val fileSystemWatcher =
-            FileSystemWatcher(this) { path, eventType ->
-                changedPaths.add(Pair(path, eventType))
-            }
+        val fileSystemWatcher = FileSystemWatcher(this, changedPaths::add)
         fileSystemWatcher.start()
         action()
 
@@ -152,12 +149,12 @@ class FileSystemFileSystemWatcherTest {
     }
 }
 
-private fun Assertion.Builder<Set<Pair<Path, EventType>>>.containsExactlyCreatedEventsFor(file: Path) =
+private fun Assertion.Builder<Set<FileSystemEvent>>.containsExactlyCreatedEventsFor(file: Path) =
     if (subject.size > 1) {
         expectThat(subject).containsExactly(
-            Pair(file, EventType.CREATED),
-            Pair(file, EventType.MODIFIED), // Modified event is optional
+            FileSystemEvent(file, EventType.CREATED),
+            FileSystemEvent(file, EventType.MODIFIED), // Modified event is optional
         )
     } else {
-        expectThat(subject).containsExactly(Pair(file, EventType.CREATED))
+        expectThat(subject).containsExactly(FileSystemEvent(file, EventType.CREATED))
     }
