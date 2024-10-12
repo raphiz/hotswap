@@ -1,5 +1,6 @@
 package io.github.raphiz.zackbum
 
+import io.github.raphiz.zackbum.LoggerHelpers.logger
 import java.nio.file.*
 import java.nio.file.attribute.BasicFileAttributes
 import java.util.concurrent.Executors
