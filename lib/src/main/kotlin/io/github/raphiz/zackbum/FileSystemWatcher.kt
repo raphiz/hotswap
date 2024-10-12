@@ -6,7 +6,6 @@ import java.nio.file.attribute.BasicFileAttributes
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.io.path.isDirectory
 import kotlin.io.path.isHidden
 
 internal class FileSystemWatcher(
@@ -36,7 +35,7 @@ internal class FileSystemWatcher(
                     dir: Path,
                     attrs: BasicFileAttributes,
                 ): FileVisitResult =
-                    if (dir.isDirectory() && !dir.isHidden()) {
+                    if (Files.isDirectory(dir) && !dir.isHidden()) {
                         dir.register(
                             watchService,
                             StandardWatchEventKinds.ENTRY_MODIFY,
@@ -65,7 +64,7 @@ internal class FileSystemWatcher(
                         logger.warning("WatchService Overflow occurred")
                     } else {
                         val changedFile = directory.resolve(event.context() as Path)
-                        if (changedFile.isDirectory()) {
+                        if (Files.isDirectory(changedFile)) {
                             changedFile.watchRecursively(notify = true)
                         } else {
                             logger.fine { "Received event ${event.kind().name()} for file $changedFile" }
