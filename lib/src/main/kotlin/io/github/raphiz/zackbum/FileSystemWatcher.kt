@@ -94,17 +94,6 @@ internal class FileSystemWatcher(
     }
 }
 
-enum class EventType {
-    CREATED,
-    MODIFIED,
-    DELETED,
-}
-
-data class FileSystemEvent(
-    val path: Path,
-    val eventType: EventType,
-)
-
 private fun WatchEvent<*>.toEventType() =
     when (kind()) {
         StandardWatchEventKinds.ENTRY_MODIFY -> EventType.MODIFIED
