@@ -12,5 +12,12 @@ tasks.withType<AbstractArchiveTask>().configureEach {
 }
 
 tasks.withType<Test>().configureEach {
-    systemProperty("java.util.logging.config.file", file("src/test/resources/logging.properties"))
+    val loggingPropertiesFile =
+        project.rootProject.layout.projectDirectory
+            .file("buildSrc/src/main/resources/logging.properties")
+            .asFile
+    if (!loggingPropertiesFile.exists()) {
+        throw GradleException("Cannot find logging.properties in ${loggingPropertiesFile.absolutePath}")
+    }
+    systemProperty("java.util.logging.config.file", loggingPropertiesFile.absolutePath)
 }
