@@ -33,6 +33,7 @@
     })) {};
   };
 
+  # Used primarily for gradle build scripts
   pre-commit.hooks.ktlint = {
     enable = true;
     name = "ktlint";

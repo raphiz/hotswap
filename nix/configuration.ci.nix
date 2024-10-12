@@ -1,6 +1,6 @@
 {pkgs, ...}: {
   imports = [
-    ./kotlin.nix
+    ./java.nix
   ];
 
   packages = [
