@@ -6,7 +6,6 @@ import java.nio.file.attribute.BasicFileAttributes
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.io.path.isHidden
 
 internal class FileSystemWatcher(
     private val workspace: Path,
@@ -35,7 +34,7 @@ internal class FileSystemWatcher(
                     dir: Path,
                     attrs: BasicFileAttributes,
                 ): FileVisitResult =
-                    if (Files.isDirectory(dir) && !dir.isHidden()) {
+                    if (Files.isDirectory(dir) && !Files.isHidden(dir)) {
                         dir.register(
                             watchService,
                             StandardWatchEventKinds.ENTRY_MODIFY,
