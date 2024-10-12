@@ -10,3 +10,7 @@ tasks.withType<AbstractArchiveTask>().configureEach {
     dirPermissions { unix("755") }
     filePermissions { unix("644") }
 }
+
+tasks.withType<Test>().configureEach {
+    systemProperty("java.util.logging.config.file", file("src/test/resources/logging.properties"))
+}

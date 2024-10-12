@@ -52,7 +52,7 @@ internal class FileSystemWatcher(
     }
 
     fun start() {
-        logger.debug("Starting watch service on workspace {}", workspace.toAbsolutePath())
+        logger.fine { "Starting watch service on workspace ${workspace.toAbsolutePath()}" }
         workspace.watchRecursively()
         active.set(true)
         Executors.newSingleThreadExecutor().submit {
@@ -62,13 +62,13 @@ internal class FileSystemWatcher(
                 val directory = watchKey.watchable() as Path
                 watchKey.pollEvents().forEach { event ->
                     if (event.kind() == StandardWatchEventKinds.OVERFLOW) {
-                        logger.warn("WatchService Overflow occurred")
+                        logger.warning("WatchService Overflow occurred")
                     } else {
                         val changedFile = directory.resolve(event.context() as Path)
                         if (changedFile.isDirectory()) {
                             changedFile.watchRecursively(notify = true)
                         } else {
-                            logger.debug("Received event {} for file {}", event.kind().name(), changedFile)
+                            logger.fine { "Received event ${event.kind().name()} for file $changedFile" }
                             onChange(FileSystemEvent(changedFile, event.toEventType()))
                         }
                     }
@@ -77,7 +77,7 @@ internal class FileSystemWatcher(
                 // reset the key to watch for future events
                 val keyIsValid = watchKey.reset()
                 if (!keyIsValid) {
-                    logger.debug("{} has been unregistered", directory)
+                    logger.fine { "$directory has been unregistered" }
                     if (directory == workspace) {
                         logger.info("Workspace has been unregistered. Will stop watch service")
                         // if the workspace directory is not valid anymore it was either deleted or the watchService was stopped
