@@ -10,5 +10,5 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@v14
       - uses: DeterminateSystems/magic-nix-cache-action@v8
       - uses: DeterminateSystems/flake-checker-action@v9
-      - run: nix flake check
+      - run: nix flake check --impure
       - run: nix develop --impure --command gradle check
