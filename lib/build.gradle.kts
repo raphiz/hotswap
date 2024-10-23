@@ -1,5 +1,5 @@
 plugins {
-    id("io.github.raphiz.zack-bum.java-library")
+    id("io.github.raphiz.zackbumm.java-library")
 }
 
 dependencies {

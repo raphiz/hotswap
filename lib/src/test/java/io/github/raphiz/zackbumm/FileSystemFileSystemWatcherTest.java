@@ -1,4 +1,4 @@
-package io.github.raphiz.zackbum;
+package io.github.raphiz.zackbumm;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;

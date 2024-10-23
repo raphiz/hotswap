@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
 
-rootProject.name = "zack-bum"
+rootProject.name = "zackbumm"
 include("lib")

@@ -1,4 +1,4 @@
-package io.github.raphiz.zackbum;
+package io.github.raphiz.zackbumm;
 
 import java.util.logging.Logger;
 

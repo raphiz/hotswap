@@ -1,4 +1,4 @@
-package io.github.raphiz.zackbum;
+package io.github.raphiz.zackbumm;
 
 import java.io.IOException;
 import java.nio.file.*;
