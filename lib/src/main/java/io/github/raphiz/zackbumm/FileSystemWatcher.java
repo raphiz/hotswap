@@ -92,14 +92,10 @@ class FileSystemWatcher {
         });
     }
 
-    public void stop() {
+    public void stop() throws IOException {
         logger.info("Stopping watch service on workspace " + workspace);
         active.set(false);
-        try {
-            watchService.close();
-        } catch (IOException e) {
-            logger.warning("Failed to close watch service: " + e.getMessage());
-        }
+        watchService.close();
     }
 
     private EventType toEventType(WatchEvent<?> event) {
