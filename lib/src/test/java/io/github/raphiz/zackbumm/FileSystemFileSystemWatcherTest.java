@@ -20,7 +20,7 @@ public class FileSystemFileSystemWatcherTest {
         Path workspace = Files.createTempDirectory(null);
         Path file = workspace.resolve("create.txt");
 
-        watchPerformAssertUntil(
+        performActionAndAssertEvents(
                 workspace,
                 () -> Files.writeString(file, "Created"),
                 changedPaths -> containsExactlyCreatedEventsFor(changedPaths, file)
@@ -33,7 +33,7 @@ public class FileSystemFileSystemWatcherTest {
         Path directory = Files.createDirectory(workspace.resolve("directory"));
         Path file = directory.resolve("create.txt");
 
-        watchPerformAssertUntil(
+        performActionAndAssertEvents(
                 workspace,
                 () -> Files.writeString(file, "Created"),
                 changedPaths -> containsExactlyCreatedEventsFor(changedPaths, file)
@@ -47,7 +47,7 @@ public class FileSystemFileSystemWatcherTest {
         Path subHidden = Files.createDirectory(hidden.resolve("sub"));
         Path rootFile = workspace.resolve("create.txt");
 
-        watchPerformAssertUntil(
+        performActionAndAssertEvents(
                 workspace,
                 () -> {
                     Files.createFile(subHidden.resolve("example.txt"));
@@ -65,7 +65,7 @@ public class FileSystemFileSystemWatcherTest {
         Path subDirectory = directory.resolve("subDirectory");
         Path file = subDirectory.resolve("create.txt");
 
-        watchPerformAssertUntil(
+        performActionAndAssertEvents(
                 workspace,
                 () -> {
                     Files.createDirectory(directory);
@@ -82,7 +82,7 @@ public class FileSystemFileSystemWatcherTest {
         Path file = workspace.resolve("change.txt");
         Files.writeString(file, "Created");
 
-        watchPerformAssertUntil(
+        performActionAndAssertEvents(
                 workspace,
                 () -> Files.writeString(file, "changed"),
                 changedPaths -> assertEquals(
@@ -98,7 +98,7 @@ public class FileSystemFileSystemWatcherTest {
         Path file = workspace.resolve("delete.txt");
         Files.writeString(file, "Created");
 
-        watchPerformAssertUntil(
+        performActionAndAssertEvents(
                 workspace,
                 () -> Files.deleteIfExists(file),
                 changedPaths -> assertEquals(
@@ -113,7 +113,7 @@ public class FileSystemFileSystemWatcherTest {
         Path workspace = Files.createTempDirectory(null);
         Path directory = Files.createDirectory(workspace.resolve("delete"));
 
-        watchPerformAssertUntil(
+        performActionAndAssertEvents(
                 workspace,
                 () -> Files.deleteIfExists(directory),
                 changedPaths -> assertEquals(
@@ -123,7 +123,7 @@ public class FileSystemFileSystemWatcherTest {
         );
     }
 
-    private void watchPerformAssertUntil(
+    private void performActionAndAssertEvents(
             Path workspace,
             ThrowingRunnable action,
             ThrowingConsumer<Set<FileSystemEvent>> assertion
@@ -131,6 +131,7 @@ public class FileSystemFileSystemWatcherTest {
         Set<FileSystemEvent> changedPaths = new HashSet<>();
         FileSystemWatcher fileSystemWatcher = new FileSystemWatcher(workspace, changedPaths::add);
         fileSystemWatcher.start();
+
         action.run();
 
         waitUntil(() -> assertion.accept(changedPaths));
