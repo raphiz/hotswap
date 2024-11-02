@@ -34,7 +34,7 @@ class FileSystemWatcher {
 
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                if (Files.isDirectory(dir) && !Files.isHidden(dir)) {
+                if (!Files.isHidden(dir)) {
                     dir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE);
                     return FileVisitResult.CONTINUE;
                 } else {
