@@ -116,9 +116,5 @@ class FileSystemWatcher {
     }
 }
 
-enum EventType {
-    CREATED, MODIFIED, DELETED,
-}
-
 record FileSystemEvent(Path path, EventType eventType) {
 }
