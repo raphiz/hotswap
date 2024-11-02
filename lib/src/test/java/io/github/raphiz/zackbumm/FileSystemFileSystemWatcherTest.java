@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -126,7 +127,7 @@ public class FileSystemFileSystemWatcherTest {
     private void performActionAndAssertEvents(
             Path workspace,
             ThrowingRunnable action,
-            ThrowingConsumer<Set<FileSystemEvent>> assertion
+            Consumer<Set<FileSystemEvent>> assertion
     ) throws Exception {
         Set<FileSystemEvent> changedPaths = new HashSet<>();
         FileSystemWatcher fileSystemWatcher = new FileSystemWatcher(workspace, changedPaths::add);
@@ -167,10 +168,5 @@ public class FileSystemFileSystemWatcherTest {
     @FunctionalInterface
     private interface ThrowingRunnable {
         void run() throws Exception;
-    }
-
-    @FunctionalInterface
-    private interface ThrowingConsumer<T> {
-        void accept(T t) throws Exception;
     }
 }
