@@ -85,7 +85,11 @@ class FileSystemWatcher {
                     logger.fine(() -> directory + " has been unregistered");
                     if (directory.equals(workspace)) {
                         logger.info("Workspace has been unregistered. Will stop watch service");
-                        active.set(false);
+                        try {
+                            stop();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
             }
