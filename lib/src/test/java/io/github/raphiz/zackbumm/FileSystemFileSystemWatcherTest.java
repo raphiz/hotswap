@@ -87,7 +87,7 @@ public class FileSystemFileSystemWatcherTest {
                 workspace,
                 () -> Files.writeString(file, "changed"),
                 changedPaths -> assertEquals(
-                        Collections.singleton(new FileSystemEvent(file, EventType.MODIFIED)),
+                        Set.of(new FileSystemEvent(file, EventType.MODIFIED)),
                         changedPaths
                 )
         );
@@ -103,7 +103,7 @@ public class FileSystemFileSystemWatcherTest {
                 workspace,
                 () -> Files.deleteIfExists(file),
                 changedPaths -> assertEquals(
-                        Collections.singleton(new FileSystemEvent(file, EventType.DELETED)),
+                        Set.of(new FileSystemEvent(file, EventType.DELETED)),
                         changedPaths
                 )
         );
