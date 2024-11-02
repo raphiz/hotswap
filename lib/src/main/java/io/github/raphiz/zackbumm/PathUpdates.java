@@ -34,6 +34,14 @@ public record PathUpdates(
         }
     }
 
+    public PathUpdates withDeleted(Path path) {
+        return new PathUpdates(
+                minusElement(created, path),
+                minusElement(modified, path),
+                plusElement(deleted, path)
+        );
+    }
+
     private static Set<Path> plusElement(Set<Path> set, Path element) {
         Set<Path> newSet = new HashSet<>(set);
         newSet.add(element);

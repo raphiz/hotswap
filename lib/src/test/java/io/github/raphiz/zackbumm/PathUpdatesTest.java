@@ -84,6 +84,37 @@ class PathUpdatesTest {
         assertEquals(expectedPathUpdates, actualPathUpdates);
     }
 
+    @Test
+    void withDeletedAddsPathToDeleted() {
+        PathUpdates emptyPathUpdates = new PathUpdates();
+        Path aPath = Path.of("/path/to/something");
 
+        PathUpdates actualPathUpdates = emptyPathUpdates.withDeleted(aPath);
+
+        PathUpdates expectedPathUpdates = new PathUpdates(Set.of(), Set.of(), Set.of(aPath));
+        assertEquals(expectedPathUpdates, actualPathUpdates);
+    }
+
+    @Test
+    void withDeletedRemovesPathFromCreatedIfPresent() {
+        Path aPath = Path.of("/path/to/something");
+        PathUpdates pathUpdatesWithCreated = new PathUpdates(Set.of(aPath), Set.of(), Set.of());
+
+        PathUpdates actualPathUpdates = pathUpdatesWithCreated.withDeleted(aPath);
+
+        PathUpdates expectedPathUpdates = new PathUpdates(Set.of(), Set.of(), Set.of(aPath));
+        assertEquals(expectedPathUpdates, actualPathUpdates);
+    }
+
+    @Test
+    void withDeletedRemovesPathFromModifiedIfPresent() {
+        Path aPath = Path.of("/path/to/something");
+        PathUpdates pathUpdatesWithModified = new PathUpdates(Set.of(), Set.of(aPath), Set.of());
+
+        PathUpdates actualPathUpdates = pathUpdatesWithModified.withDeleted(aPath);
+
+        PathUpdates expectedPathUpdates = new PathUpdates(Set.of(), Set.of(), Set.of(aPath));
+        assertEquals(expectedPathUpdates, actualPathUpdates);
+    }
 
 }
