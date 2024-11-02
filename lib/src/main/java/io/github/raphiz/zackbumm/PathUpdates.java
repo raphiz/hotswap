@@ -22,6 +22,18 @@ public record PathUpdates(
         );
     }
 
+    public PathUpdates withModified(Path path) {
+        if (created.contains(path)) {
+            return this;
+        } else {
+            return new PathUpdates(
+                    created,
+                    plusElement(modified, path),
+                    minusElement(deleted, path)
+            );
+        }
+    }
+
     private static Set<Path> plusElement(Set<Path> set, Path element) {
         Set<Path> newSet = new HashSet<>(set);
         newSet.add(element);
