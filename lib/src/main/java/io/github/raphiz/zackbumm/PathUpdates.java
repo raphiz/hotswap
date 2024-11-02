@@ -14,6 +14,21 @@ public record PathUpdates(
         this(Set.of(), Set.of(), Set.of());
     }
 
+    public PathUpdates withPathUpdate(Path path, EventType eventType) {
+        switch (eventType) {
+            case CREATED -> {
+                return withCreated(path);
+            }
+            case MODIFIED -> {
+                return withModified(path);
+            }
+            case DELETED -> {
+                return withDeleted(path);
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + eventType);
+        }
+    }
+
     public PathUpdates withCreated(Path path) {
         return new PathUpdates(
                 plusElement(created, path),

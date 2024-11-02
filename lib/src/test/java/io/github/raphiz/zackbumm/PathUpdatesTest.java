@@ -9,6 +9,40 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PathUpdatesTest {
+
+    @Test
+    void withPathUpdateAddsPathToCreatedSetWhenEventTypeIsCreated() {
+        PathUpdates emptyPathUpdates = new PathUpdates();
+        Path aPath = Path.of("/path/to/something");
+
+        PathUpdates actualPathUpdates = emptyPathUpdates.withPathUpdate(aPath, EventType.CREATED);
+
+        PathUpdates expectedPathUpdates = new PathUpdates(Set.of(aPath), Set.of(), Set.of());
+        assertEquals(expectedPathUpdates, actualPathUpdates);
+    }
+
+    @Test
+    void withPathUpdateAddsPathToModifiedSetWhenEventTypeIsModified() {
+        PathUpdates emptyPathUpdates = new PathUpdates();
+        Path aPath = Path.of("/path/to/something");
+
+        PathUpdates actualPathUpdates = emptyPathUpdates.withPathUpdate(aPath, EventType.MODIFIED);
+
+        PathUpdates expectedPathUpdates = new PathUpdates(Set.of(), Set.of(aPath), Set.of());
+        assertEquals(expectedPathUpdates, actualPathUpdates);
+    }
+
+    @Test
+    void withPathUpdateAddsPathToDeletedSetWhenEventTypeIsDeleted() {
+        PathUpdates emptyPathUpdates = new PathUpdates();
+        Path aPath = Path.of("/path/to/something");
+
+        PathUpdates actualPathUpdates = emptyPathUpdates.withPathUpdate(aPath, EventType.DELETED);
+
+        PathUpdates expectedPathUpdates = new PathUpdates(Set.of(), Set.of(), Set.of(aPath));
+        assertEquals(expectedPathUpdates, actualPathUpdates);
+    }
+
     @Test
     void defaultConstructorInitializesEmptySets() {
         PathUpdates pathUpdates = new PathUpdates();
