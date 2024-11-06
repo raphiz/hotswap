@@ -2,17 +2,6 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
   "dependencyDashboard": false,
-  "packageRules": [
-    {
-      "groupName": "Kotlin",
-      "groupSlug": "kotlin",
-      "matchPackagePatterns": ["org.jetbrains.kotlin.*"]
-    },
-    {
-      "matchUpdateTypes": ["minor", "patch"],
-      "automerge": true
-    }
-  ],
   "lockFileMaintenance": {
     "enabled": true,
     "extends": ["schedule:weekly"]
