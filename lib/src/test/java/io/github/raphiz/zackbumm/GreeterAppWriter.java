@@ -86,7 +86,7 @@ public class GreeterAppWriter implements AutoCloseable {
     }
 
     public void compile() throws IOException, InterruptedException {
-        Process process = new ProcessBuilder("javac", "-source", JAVA_LANGUAGE_VERSION, "-target", JAVA_LANGUAGE_VERSION, "-d",
+        Process process = new ProcessBuilder("javac", "--release", JAVA_LANGUAGE_VERSION, "-d",
                 buildDirectory.toAbsolutePath().toString(),
                 getJavaFilePath().toAbsolutePath().toString()
         )
