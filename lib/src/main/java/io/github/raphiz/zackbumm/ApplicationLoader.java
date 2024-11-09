@@ -3,6 +3,7 @@ package io.github.raphiz.zackbumm;
 import java.io.Closeable;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.logging.Logger;
 
@@ -11,14 +12,16 @@ public class ApplicationLoader {
     private final String mainClass;
     private final Collection<String> packagePrefixes;
     private final URL[] urls;
+    private final Duration shutdownPollingInterval;
     private final Logger logger = LoggerHelpers.logger();
     private Thread appThread;
     private ClassLoader classLoader;
 
-    public ApplicationLoader(String mainClass, Collection<String> packagePrefixes, URL[] urls) {
+    public ApplicationLoader(String mainClass, Collection<String> packagePrefixes, URL[] urls, Duration shutdownPollingInterval) {
         this.mainClass = mainClass;
         this.packagePrefixes = packagePrefixes;
         this.urls = urls;
+        this.shutdownPollingInterval = shutdownPollingInterval;
     }
 
     public synchronized void start() {
@@ -59,7 +62,11 @@ public class ApplicationLoader {
             logger.info("Interrupting existing application thread");
             appThread.interrupt();
             try {
-                appThread.join();
+                appThread.join(shutdownPollingInterval.toMillis());
+                while (appThread.isAlive()) {
+                    logger.warning("Application thread is still running after interrupt.");
+                    appThread.join(shutdownPollingInterval.toMillis());
+                }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

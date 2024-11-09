@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Comparator;
 import java.util.concurrent.TimeUnit;
 
@@ -56,6 +57,29 @@ public class GreeterAppWriter implements AutoCloseable {
                     }
                 }
                 """.formatted(packageName, className, outputLog.toAbsolutePath(), messageCode);
+
+        Files.createDirectories(getJavaFilePath().getParent());
+        Files.writeString(getJavaFilePath(), javaCode);
+    }
+
+    public void writeAppWithSlowShutdownProcedure(Duration shutdownDuration) throws IOException {
+        String javaCode = """
+                package %s;
+                import java.nio.file.*;
+                
+                public class %s {
+                    public static void main(String[] args) throws Exception {
+                        while (true) {
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                Thread.sleep(%s);
+                                break;
+                            }
+                        }
+                    }
+                }
+                """.formatted(packageName, className, shutdownDuration.toMillis());
 
         Files.createDirectories(getJavaFilePath().getParent());
         Files.writeString(getJavaFilePath(), javaCode);
