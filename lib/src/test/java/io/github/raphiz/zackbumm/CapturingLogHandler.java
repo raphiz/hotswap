@@ -4,16 +4,19 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Handler;
-import java.util.logging.LogRecord;
+import java.util.logging.Level;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+record LogRecord(Level level, String message) {
+}
+
 class CapturingLogHandler extends Handler {
-    private final List<String> logRecords = Collections.synchronizedList(new LinkedList<>());
+    private final List<LogRecord> logRecords = Collections.synchronizedList(new LinkedList<>());
 
     @Override
-    public void publish(LogRecord record) {
-        logRecords.add(record.getMessage());
+    public void publish(java.util.logging.LogRecord record) {
+        logRecords.add(new LogRecord(record.getLevel(), record.getMessage()));
     }
 
     @Override
@@ -26,7 +29,7 @@ class CapturingLogHandler extends Handler {
         logRecords.clear();
     }
 
-    List<String> getRecords() {
+    List<LogRecord> getRecords() {
         return List.copyOf(logRecords);
     }
 
@@ -34,7 +37,7 @@ class CapturingLogHandler extends Handler {
         logRecords.clear();
     }
 
-    void assertLogMessages(String... messages) {
+    void assertLogRecords(LogRecord... messages) {
         assertEquals(List.of(messages), getRecords());
         clear();
     }

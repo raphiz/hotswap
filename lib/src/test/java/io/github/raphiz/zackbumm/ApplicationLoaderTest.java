@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ApplicationLoaderTest {
@@ -40,8 +41,8 @@ public class ApplicationLoaderTest {
         );
         applicationLoader.start();
         greeterAppWriter.assertLoggedMessage("Hello World");
-        capturingLogHandler.assertLogMessages(
-                "Starting Application com.example.HelloWorldApp"
+        capturingLogHandler.assertLogRecords(
+                new LogRecord(Level.INFO, "Starting Application com.example.HelloWorldApp")
         );
 
         // Change the greeter message
@@ -50,11 +51,11 @@ public class ApplicationLoaderTest {
 
         // Restart the application
         applicationLoader.restart();
-        capturingLogHandler.assertLogMessages(
-                "Restarting Application com.example.HelloWorldApp",
-                "Stopping Application com.example.HelloWorldApp",
-                "Interrupting existing application thread",
-                "Starting Application com.example.HelloWorldApp"
+        capturingLogHandler.assertLogRecords(
+                new LogRecord(Level.INFO, "Restarting Application com.example.HelloWorldApp"),
+                new LogRecord(Level.INFO, "Stopping Application com.example.HelloWorldApp"),
+                new LogRecord(Level.INFO, "Interrupting existing application thread"),
+                new LogRecord(Level.INFO, "Starting Application com.example.HelloWorldApp")
         );
 
         greeterAppWriter.assertLoggedMessage("Hello Universe");
