@@ -4,8 +4,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLClassLoader;
 import java.time.Duration;
 import java.util.List;
@@ -20,7 +18,7 @@ public class ApplicationLoaderTest {
     private static final String CLASS_NAME = "HelloWorldApp";
     public static final Duration SHUTDOWN_POLLING_INTERVAL = Duration.ofMillis(100);
     private final GreeterAppWriter greeterAppWriter = new GreeterAppWriter(PACKAGE_PREFIX, CLASS_NAME);
-    private final URLClassLoader parentClassLoader = createFakeParentClassLoader();
+    private final URLClassLoader parentClassLoader = greeterAppWriter.createFakeParentClassLoader();
     private final CapturingLogHandler capturingLogHandler = new CapturingLogHandler();
     private ApplicationLoader applicationLoader;
 
@@ -104,14 +102,4 @@ public class ApplicationLoaderTest {
         }
         greeterAppWriter.close();
     }
-
-    private URLClassLoader createFakeParentClassLoader() {
-        try {
-            return new URLClassLoader(new URL[]{greeterAppWriter.getBuildDirectory().toUri().toURL()}, ClassLoader.getSystemClassLoader());
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
 }

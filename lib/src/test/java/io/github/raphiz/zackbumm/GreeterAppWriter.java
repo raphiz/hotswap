@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Assertions;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -127,5 +130,13 @@ public class GreeterAppWriter implements AutoCloseable {
         String packageDirectories = packageName.replace(".", FileSystems.getDefault().getSeparator());
         String classFileName = className + ".java";
         return sourceDirectory.resolve(packageDirectories).resolve(classFileName);
+    }
+
+    URLClassLoader createFakeParentClassLoader() {
+        try {
+            return new URLClassLoader(new URL[]{getBuildDirectory().toUri().toURL()}, ClassLoader.getSystemClassLoader());
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
