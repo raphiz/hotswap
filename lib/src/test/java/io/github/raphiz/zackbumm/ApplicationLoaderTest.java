@@ -28,6 +28,7 @@ public class ApplicationLoaderTest {
     @BeforeEach
     public void prepareLogger() {
         Logger logger = Logger.getLogger(ApplicationLoader.class.getName());
+        logger.setLevel(Level.ALL);
         logger.addHandler(capturingLogHandler);
     }
 
@@ -60,6 +61,7 @@ public class ApplicationLoaderTest {
                 new LogRecord(Level.INFO, "Restarting Application com.example.HelloWorldApp"),
                 new LogRecord(Level.INFO, "Stopping Application com.example.HelloWorldApp"),
                 new LogRecord(Level.INFO, "Interrupting existing application thread"),
+                new LogRecord(Level.FINE, "Clean up previous class loader and application instance"),
                 new LogRecord(Level.INFO, "Starting Application com.example.HelloWorldApp")
         );
 
