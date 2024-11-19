@@ -21,9 +21,11 @@ class DevModeTest {
 
     @BeforeEach
     public void prepareLogger() {
-        Logger logger = Logger.getLogger(ApplicationLoader.class.getName());
-        logger.setLevel(Level.ALL);
-        logger.addHandler(capturingLogHandler);
+        Stream.of(ApplicationLoader.class, DevMode.class).forEach(clazz -> {
+            Logger logger = Logger.getLogger(clazz.getName());
+            logger.setLevel(Level.ALL);
+            logger.addHandler(capturingLogHandler);
+        });
     }
 
     @Test
@@ -57,6 +59,7 @@ class DevModeTest {
         greeterAppWriter.assertLoggedMessage("Hello Universe");
 
         capturingLogHandler.assertLogRecords(
+                new LogRecord(Level.FINE, "Restarting due to PathUpdates[created=[], modified=[" + greeterAppWriter.getBuildDirectory() + "/com/example/HelloWorldApp.class], deleted=[]]"),
                 new LogRecord(Level.INFO, "Restarting Application com.example.HelloWorldApp"),
                 new LogRecord(Level.INFO, "Stopping Application com.example.HelloWorldApp"),
                 new LogRecord(Level.INFO, "Interrupting existing application thread"),
