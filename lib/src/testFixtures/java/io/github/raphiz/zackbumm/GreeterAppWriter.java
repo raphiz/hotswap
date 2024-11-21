@@ -24,6 +24,7 @@ public class GreeterAppWriter implements AutoCloseable {
     public  static final String CLASS_NAME = "HelloWorldApp";
 
     private final Path sourceDirectory;
+    private final Path projectDirectory;
     private final Path buildDirectory;
     private final Path outputLog;
     private final String packageName;
@@ -37,12 +38,17 @@ public class GreeterAppWriter implements AutoCloseable {
         this.packageName = packageName;
         this.className = className;
         try {
-            this.sourceDirectory = Files.createTempDirectory("source");
+            this.projectDirectory = Files.createTempDirectory("source");
+            this.sourceDirectory = projectDirectory.resolve("src/main/java");
             this.buildDirectory = Files.createTempDirectory("build");
             this.outputLog = Files.createTempFile("output", ".log");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Path getProjectDirectory() {
+        return projectDirectory;
     }
 
     public Path getBuildDirectory() {
@@ -108,10 +114,14 @@ public class GreeterAppWriter implements AutoCloseable {
     }
 
     public void assertLoggedMessage(String message) {
+        assertLoggedMessage(message, Duration.ofSeconds(5));
+    }
+
+    public void assertLoggedMessage(String message, Duration timeout) {
         try {
             Awaitility.await()
-                    .atMost(5, TimeUnit.SECONDS)
-                    .pollInterval(10, TimeUnit.MILLISECONDS)
+                    .atMost(timeout)
+                    .pollInterval(Duration.ofMillis(10))
                     .until(() -> Files.readString(outputLog).contains(message));
         } catch (Exception e) {
             Assertions.fail("Timeout waiting for log message: '" + message + "'", e);

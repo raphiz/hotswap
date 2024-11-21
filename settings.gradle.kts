@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "zackbumm"
-include("lib")
+include("lib", "gradle-plugin")
