@@ -10,8 +10,20 @@ java {
 
 testing {
     suites {
+        @Suppress("UnstableApiUsage")
         val test by getting(JvmTestSuite::class) {
-            useJUnitJupiter()
+            useJUnitJupiter("5.10.2")
+        }
+    }
+}
+
+project.afterEvaluate {
+    val testFixturesConfig = configurations.findByName("testFixturesImplementation")
+    if (testFixturesConfig != null) {
+        project.dependencies.apply {
+            add(testFixturesConfig.name, platform("org.junit:junit-bom:5.10.2"))
+            add(testFixturesConfig.name, "org.junit.jupiter:junit-jupiter-engine")
+            add(testFixturesConfig.name, "org.junit.jupiter:junit-jupiter-api")
         }
     }
 }
