@@ -10,14 +10,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static io.github.raphiz.zackbumm.GreeterAppWriter.CLASS_NAME;
+import static io.github.raphiz.zackbumm.GreeterAppWriter.PACKAGE_PREFIX;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ApplicationLoaderTest {
 
-    private static final String PACKAGE_PREFIX = "com.example";
-    private static final String CLASS_NAME = "HelloWorldApp";
     public static final Duration SHUTDOWN_POLLING_INTERVAL = Duration.ofMillis(100);
-    private final GreeterAppWriter greeterAppWriter = new GreeterAppWriter(PACKAGE_PREFIX, CLASS_NAME);
+    private final GreeterAppWriter greeterAppWriter = new GreeterAppWriter();
     private final URLClassLoader parentClassLoader = greeterAppWriter.createFakeParentClassLoader();
     private final CapturingLogHandler capturingLogHandler = new CapturingLogHandler();
     private ApplicationLoader applicationLoader;

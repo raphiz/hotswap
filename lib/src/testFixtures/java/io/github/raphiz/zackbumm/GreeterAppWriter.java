@@ -20,11 +20,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GreeterAppWriter implements AutoCloseable {
     public static final String JAVA_LANGUAGE_VERSION = "17";
+    public static final String PACKAGE_PREFIX = "com.example";
+    public  static final String CLASS_NAME = "HelloWorldApp";
+
     private final Path sourceDirectory;
     private final Path buildDirectory;
     private final Path outputLog;
     private final String packageName;
     private final String className;
+
+    public GreeterAppWriter() {
+        this(PACKAGE_PREFIX, CLASS_NAME);
+    }
 
     public GreeterAppWriter(String packageName, String className) {
         this.packageName = packageName;
