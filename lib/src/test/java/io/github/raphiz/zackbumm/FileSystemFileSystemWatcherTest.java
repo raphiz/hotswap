@@ -3,12 +3,11 @@ package io.github.raphiz.zackbumm;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -18,11 +17,11 @@ public class FileSystemFileSystemWatcherTest {
 
     @Test
     public void itNotifiesWhenANewFileIsCreated() throws Exception {
-        Path workspace = Files.createTempDirectory(null);
-        Path file = workspace.resolve("create.txt");
+        Set<Path> workspaces = manyWorkspaces();
+        Path file = random(workspaces).resolve("create.txt");
 
         performActionAndAssertEvents(
-                workspace,
+                workspaces,
                 () -> Files.writeString(file, "Created"),
                 changedPaths -> containsExactlyCreatedEventsFor(changedPaths, file)
         );
@@ -30,12 +29,12 @@ public class FileSystemFileSystemWatcherTest {
 
     @Test
     public void itNotifiesWhenANewFileIsCreatedInASubdirectory() throws Exception {
-        Path workspace = Files.createTempDirectory(null);
-        Path directory = Files.createDirectory(workspace.resolve("directory"));
+        Set<Path> workspaces = manyWorkspaces();
+        Path directory = Files.createDirectory(random(workspaces).resolve("directory"));
         Path file = directory.resolve("create.txt");
 
         performActionAndAssertEvents(
-                workspace,
+                workspaces,
                 () -> Files.writeString(file, "Created"),
                 changedPaths -> containsExactlyCreatedEventsFor(changedPaths, file)
         );
@@ -43,13 +42,13 @@ public class FileSystemFileSystemWatcherTest {
 
     @Test
     public void itDoesNotNotifyForFilesInHiddenDirectories() throws Exception {
-        Path workspace = Files.createTempDirectory(null);
-        Path hidden = Files.createDirectory(workspace.resolve(".hidden"));
+        Set<Path> workspaces = manyWorkspaces();
+        Path hidden = Files.createDirectory(random(workspaces).resolve(".hidden"));
         Path subHidden = Files.createDirectory(hidden.resolve("sub"));
-        Path rootFile = workspace.resolve("create.txt");
+        Path rootFile = random(workspaces).resolve("create.txt");
 
         performActionAndAssertEvents(
-                workspace,
+                workspaces,
                 () -> {
                     Files.createFile(subHidden.resolve("example.txt"));
                     Files.createFile(hidden.resolve("example.txt"));
@@ -61,13 +60,13 @@ public class FileSystemFileSystemWatcherTest {
 
     @Test
     public void itNotifiesWhenAFileIsCreatedInANewSubdirectory() throws Exception {
-        Path workspace = Files.createTempDirectory(null);
-        Path directory = workspace.resolve("directory");
+        Set<Path> workspaces = manyWorkspaces();
+        Path directory = random(workspaces).resolve("directory");
         Path subDirectory = directory.resolve("subDirectory");
         Path file = subDirectory.resolve("create.txt");
 
         performActionAndAssertEvents(
-                workspace,
+                workspaces,
                 () -> {
                     Files.createDirectory(directory);
                     Files.createDirectory(subDirectory);
@@ -79,12 +78,12 @@ public class FileSystemFileSystemWatcherTest {
 
     @Test
     public void itNotifiesWhenAFileIsChanged() throws Exception {
-        Path workspace = Files.createTempDirectory(null);
-        Path file = workspace.resolve("change.txt");
+        Set<Path> workspaces = manyWorkspaces();
+        Path file = random(workspaces).resolve("change.txt");
         Files.writeString(file, "Created");
 
         performActionAndAssertEvents(
-                workspace,
+                workspaces,
                 () -> Files.writeString(file, "changed"),
                 changedPaths -> assertEquals(
                         Set.of(new FileSystemEvent(file, EventType.MODIFIED)),
@@ -95,12 +94,12 @@ public class FileSystemFileSystemWatcherTest {
 
     @Test
     public void itNotifiesWhenAFileIsDeleted() throws Exception {
-        Path workspace = Files.createTempDirectory(null);
-        Path file = workspace.resolve("delete.txt");
+        Set<Path> workspaces = manyWorkspaces();
+        Path file = random(workspaces).resolve("delete.txt");
         Files.writeString(file, "Created");
 
         performActionAndAssertEvents(
-                workspace,
+                workspaces,
                 () -> Files.deleteIfExists(file),
                 changedPaths -> assertEquals(
                         Set.of(new FileSystemEvent(file, EventType.DELETED)),
@@ -111,11 +110,11 @@ public class FileSystemFileSystemWatcherTest {
 
     @Test
     public void itNotifiesWhenADirectoryIsDeleted() throws Exception {
-        Path workspace = Files.createTempDirectory(null);
-        Path directory = Files.createDirectory(workspace.resolve("delete"));
+        Set<Path> workspaces = manyWorkspaces();
+        Path directory = Files.createDirectory(random(workspaces).resolve("delete"));
 
         performActionAndAssertEvents(
-                workspace,
+                workspaces,
                 () -> Files.deleteIfExists(directory),
                 changedPaths -> assertEquals(
                         Collections.singleton(new FileSystemEvent(directory, EventType.DELETED)),
@@ -125,12 +124,12 @@ public class FileSystemFileSystemWatcherTest {
     }
 
     private void performActionAndAssertEvents(
-            Path workspace,
+            Set<Path> workspaces,
             ThrowingRunnable action,
             Consumer<Set<FileSystemEvent>> assertion
     ) throws Exception {
         Set<FileSystemEvent> changedPaths = new HashSet<>();
-        FileSystemWatcher fileSystemWatcher = new FileSystemWatcher(workspace, changedPaths::add);
+        FileSystemWatcher fileSystemWatcher = new FileSystemWatcher(workspaces, changedPaths::add);
         fileSystemWatcher.start();
 
         action.run();
@@ -163,6 +162,15 @@ public class FileSystemFileSystemWatcherTest {
             expectedEvents = Collections.singleton(new FileSystemEvent(file, EventType.CREATED));
         }
         assertEquals(expectedEvents, changedPaths);
+    }
+
+    private Path random(Set<Path> workspaces) {
+        int randomIndex = ThreadLocalRandom.current().nextInt(workspaces.size());
+        return new ArrayList<>(workspaces).get(randomIndex);
+    }
+
+    private Set<Path> manyWorkspaces() throws IOException {
+        return Set.of(Files.createTempDirectory(null), Files.createTempDirectory(null));
     }
 
     @FunctionalInterface

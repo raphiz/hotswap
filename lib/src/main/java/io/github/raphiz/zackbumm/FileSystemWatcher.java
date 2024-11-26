@@ -3,6 +3,7 @@ package io.github.raphiz.zackbumm;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -12,12 +13,12 @@ import java.util.logging.Logger;
 class FileSystemWatcher {
     private final Logger logger = LoggerHelpers.logger();
     private final AtomicBoolean active = new AtomicBoolean(false);
-    private final Path workspace;
+    private final Set<Path> watchDirectories;
     private final Consumer<FileSystemEvent> onChange;
     private final WatchService watchService;
 
-    public FileSystemWatcher(Path workspace, Consumer<FileSystemEvent> onChange) throws IOException {
-        this.workspace = workspace;
+    public FileSystemWatcher(Set<Path> watchDirectories, Consumer<FileSystemEvent> onChange) throws IOException {
+        this.watchDirectories = watchDirectories;
         this.onChange = onChange;
         this.watchService = FileSystems.getDefault().newWatchService();
     }
@@ -45,8 +46,11 @@ class FileSystemWatcher {
     }
 
     public void start() throws IOException {
-        logger.info("Starting watch service on workspace " + workspace.toAbsolutePath());
-        watchRecursively(workspace, false);
+        logger.info("Starting watch service");
+        for (Path watchDirectory : watchDirectories) {
+            logger.fine("Watching directory " + watchDirectory);
+            watchRecursively(watchDirectory, false);
+        }
         active.set(true);
         Executors.newSingleThreadExecutor().submit(() -> {
             Thread.currentThread().setName("filewatch-thread");
@@ -83,8 +87,8 @@ class FileSystemWatcher {
                 boolean keyIsValid = watchKey.reset();
                 if (!keyIsValid) {
                     logger.fine(() -> directory + " has been unregistered");
-                    if (directory.equals(workspace)) {
-                        logger.info("Workspace has been unregistered. Will stop watch service");
+                    if (watchDirectories.contains(directory)) {
+                        logger.info("Watch directory " + directory + " has been unregistered. Will stop watch service");
                         try {
                             stop();
                         } catch (IOException e) {
@@ -97,7 +101,7 @@ class FileSystemWatcher {
     }
 
     public void stop() throws IOException {
-        logger.info("Stopping watch service on workspace " + workspace);
+        logger.info("Stopping watch service");
         active.set(false);
         watchService.close();
     }

@@ -11,6 +11,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class DevMode {
@@ -66,7 +67,7 @@ public class DevMode {
             applicationLoader.restart();
         });
 
-        new FileSystemWatcher(workspace, fileSystemEvent -> {
+        new FileSystemWatcher(Set.of(workspace), fileSystemEvent -> {
             if (restartMatchers.stream().anyMatch(matcher -> matcher.matches(fileSystemEvent.path()))) {
                 // Skip delete events for class files during recompilation
                 if (fileSystemEvent.eventType() != EventType.DELETED) {
