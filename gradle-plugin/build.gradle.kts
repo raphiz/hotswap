@@ -13,5 +13,6 @@ gradlePlugin {
 }
 
 dependencies {
+    implementation(project(":lib"))
     testImplementation(testFixtures(project(":lib")))
 }

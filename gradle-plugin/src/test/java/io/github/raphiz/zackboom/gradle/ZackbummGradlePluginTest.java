@@ -48,9 +48,18 @@ class ZackbummGradlePluginTest {
         // and extracted on the first run
         greeterAppWriter.assertLoggedMessage("Hello World", Duration.ofMinutes(2));
 
-        // TODO: Test drive once the plugin is ready
-        // greeterAppWriter.writeCodeWithMessage("Hello Universe");
-        // greeterAppWriter.assertLoggedMessage("Hello Universe");
+        // Update greeter message and recompile
+        greeterAppWriter.writeCodeWithMessage("Hello Universe");
+        GradleRunner.create()
+                .withProjectDir(greeterAppWriter.getProjectDirectory().toFile())
+                .withArguments("classes")
+                .withGradleVersion(gradleVersion)
+                .withPluginClasspath()
+                .forwardOutput()
+                .build();
+
+        // Wait for the output to appear.
+        greeterAppWriter.assertLoggedMessage("Hello Universe");
     }
 
     private void writeGradleFile() throws IOException {
