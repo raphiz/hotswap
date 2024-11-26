@@ -27,7 +27,7 @@ class FileSystemWatcher {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                 if (notify) {
-                    onChange.accept(new FileSystemEvent(file, EventType.CREATED));
+                    onChange.accept(new FileSystemEvent(file.toAbsolutePath(), EventType.CREATED));
                 }
                 return FileVisitResult.CONTINUE;
             }
@@ -75,7 +75,7 @@ class FileSystemWatcher {
                             }
                         } else {
                             logger.fine(() -> "Received event " + event.kind().name() + " for file " + changedFile);
-                            onChange.accept(new FileSystemEvent(changedFile, toEventType(event)));
+                            onChange.accept(new FileSystemEvent(changedFile.toAbsolutePath(), toEventType(event)));
                         }
                     }
                 }
