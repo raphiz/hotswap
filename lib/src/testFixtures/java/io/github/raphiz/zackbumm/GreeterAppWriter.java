@@ -62,6 +62,10 @@ public class GreeterAppWriter implements AutoCloseable {
                 
                 public class %s {
                     public static void main(String[] args) throws Exception {
+                        System.out.println("Greeter app started");
+                        if(!isClassAvailable("io.github.raphiz.zackbumm.DevMode")){
+                            System.out.println("IMPORTANT: DevMode class is not on the classpath!");
+                        }
                         while (true) {
                             Files.writeString(Path.of("%s"), "%s");
                             try {
@@ -69,6 +73,14 @@ public class GreeterAppWriter implements AutoCloseable {
                             } catch (InterruptedException e) {
                                 break;
                             }
+                        }
+                    }
+                    public static boolean isClassAvailable(String className) {
+                        try {
+                            Class.forName(className);
+                            return true; // Class is available
+                        } catch (ClassNotFoundException e) {
+                            return false; // Class is not in the classpath
                         }
                     }
                 }
