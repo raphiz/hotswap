@@ -26,6 +26,22 @@ public class DevMode {
                 .map(Path::of)
                 .collect(Collectors.toSet());
 
+        startDevMode(
+                mainClass,
+                packagePrefixes,
+                classesOutputDirectories,
+                Duration.ofSeconds(5), // TODO: Make configurable
+                Duration.ofMillis(10) // TODO: Make configurable
+        );
+    }
+
+    public static void startDevMode(
+            String mainClass,
+            Collection<String> packagePrefixes,
+            Set<Path> classesOutputDirectories,
+            Duration shutdownPollingInterval,
+            Duration debounceDuration
+    ) throws IOException {
         // TODO: Later -> Add support for jars (gradle modules)
         URL[] classPathUrls = classesOutputDirectories.stream()
                 .map(DevMode::toUrl)
@@ -36,26 +52,6 @@ public class DevMode {
                 .map(it -> FileSystems.getDefault().getPathMatcher("glob:" + it + "/**"))
                 .toList();
 
-        startDevMode(
-                mainClass,
-                packagePrefixes,
-                classPathUrls,
-                restartMatchers,
-                classesOutputDirectories,
-                Duration.ofSeconds(5), // TODO: Make configurable
-                Duration.ofMillis(10) // TODO: Make configurable
-        );
-    }
-
-    public static void startDevMode(
-            String mainClass,
-            Collection<String> packagePrefixes,
-            URL[] classPathUrls,
-            List<PathMatcher> restartMatchers,
-            Set<Path> watchPaths,
-            Duration shutdownPollingInterval,
-            Duration debounceDuration
-    ) throws IOException {
         ApplicationLoader applicationLoader = new ApplicationLoader(
                 mainClass,
                 packagePrefixes,
@@ -69,7 +65,7 @@ public class DevMode {
             applicationLoader.restart();
         });
 
-        new FileSystemWatcher(watchPaths, fileSystemEvent -> {
+        new FileSystemWatcher(classesOutputDirectories, fileSystemEvent -> {
             if (restartMatchers.stream().anyMatch(matcher -> matcher.matches(fileSystemEvent.path()))) {
                 // Skip delete events for class files during recompilation
                 if (fileSystemEvent.eventType() != EventType.DELETED) {

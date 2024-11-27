@@ -3,8 +3,6 @@ package io.github.raphiz.zackbumm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.net.URLClassLoader;
-import java.nio.file.FileSystems;
 import java.time.Duration;
 import java.util.List;
 import java.util.Set;
@@ -18,7 +16,6 @@ import static io.github.raphiz.zackbumm.GreeterAppWriter.PACKAGE_PREFIX;
 class DevModeTest {
     public static final Duration SHUTDOWN_POLLING_INTERVAL = Duration.ofMillis(100);
     private final GreeterAppWriter greeterAppWriter = new GreeterAppWriter();
-    private final URLClassLoader parentClassLoader = greeterAppWriter.createFakeParentClassLoader();
     private final CapturingLogHandler capturingLogHandler = new CapturingLogHandler();
 
     @BeforeEach
@@ -40,8 +37,6 @@ class DevModeTest {
         DevMode.startDevMode(
                 PACKAGE_PREFIX + "." + CLASS_NAME,
                 List.of(PACKAGE_PREFIX),
-                parentClassLoader.getURLs(),
-                Stream.of(greeterAppWriter.getBuildDirectory()).map(it -> FileSystems.getDefault().getPathMatcher("glob:" + it + "/**")).toList(),
                 Set.of(greeterAppWriter.getBuildDirectory()),
                 SHUTDOWN_POLLING_INTERVAL,
                 Duration.ofMillis(20)
