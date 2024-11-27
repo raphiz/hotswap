@@ -12,11 +12,11 @@ import java.util.stream.Collectors;
 
 public class ZackbummGradlePlugin implements Plugin<Project> {
     @Override
-    public void apply(@NotNull Project project) {
-        project.afterEvaluate((project1) -> {
+    public void apply(@NotNull Project target) {
+        target.afterEvaluate((project) -> {
             // TODO: Make name configurable via extension
             // TODO: Add more config options such as timeouts and additional directories to watch
-            TaskProvider<JavaExec> taskProvider = project1.getTasks().named("run", JavaExec.class);
+            TaskProvider<JavaExec> taskProvider = project.getTasks().named("run", JavaExec.class);
             JavaExec task = taskProvider.get();
 
             // Add zackbumm library jar to the runtime classpath
