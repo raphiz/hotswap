@@ -15,6 +15,23 @@ import java.util.stream.Collectors;
 public class DevMode {
     private static final Logger logger = LoggerHelpers.logger();
 
+    public static class Configuration {
+        final String mainClass;
+        final List<String> packagePrefixes;
+        final Set<Path> classesOutputDirectories;
+        final Duration shutdownPollingInterval;
+        final Duration debounceDuration;
+
+        Configuration(String mainClass, List<String> packagePrefixes, Set<Path> classesOutputDirectories, Duration shutdownPollingInterval, Duration debounceDuration) {
+            this.mainClass = mainClass;
+            this.packagePrefixes = packagePrefixes;
+            this.classesOutputDirectories = classesOutputDirectories;
+            this.shutdownPollingInterval = shutdownPollingInterval;
+            this.debounceDuration = debounceDuration;
+        }
+    }
+
+
     public static void main(String[] args) throws IOException {
         // TODO: Pass args to main app (and verify it!)
         String mainClass = System.getProperty("zackbumm.mainClass");
@@ -25,46 +42,41 @@ public class DevMode {
         Duration shutdownPollingInterval = parseDuration(System.getProperty("zackbumm.shutdownPollingInterval"), Duration.ofSeconds(5));
         Duration debounceDuration = parseDuration(System.getProperty("zackbumm.debounceDuration"), Duration.ofMillis(10));
 
-        startDevMode(
+        Configuration configuration = new Configuration(
                 mainClass,
                 packagePrefixes,
                 classesOutputDirectories,
                 shutdownPollingInterval,
                 debounceDuration
         );
+        startDevMode(configuration);
     }
 
-    public static void startDevMode(
-            String mainClass,
-            Collection<String> packagePrefixes,
-            Set<Path> classesOutputDirectories,
-            Duration shutdownPollingInterval,
-            Duration debounceDuration
-    ) throws IOException {
+    public static void startDevMode(Configuration configuration) throws IOException {
         // TODO: Later -> Add support for jars (gradle modules)
-        URL[] classPathUrls = classesOutputDirectories.stream()
+        URL[] classPathUrls = configuration.classesOutputDirectories.stream()
                 .map(DevMode::toUrl)
                 .toArray(URL[]::new);
 
-        List<PathMatcher> restartMatchers = classesOutputDirectories.stream()
+        List<PathMatcher> restartMatchers = configuration.classesOutputDirectories.stream()
                 .map(Path::toAbsolutePath)
                 .map(it -> FileSystems.getDefault().getPathMatcher("glob:" + it + "/**"))
                 .toList();
 
         ApplicationLoader applicationLoader = new ApplicationLoader(
-                mainClass,
-                packagePrefixes,
+                configuration.mainClass,
+                configuration.packagePrefixes,
                 classPathUrls,
-                shutdownPollingInterval
+                configuration.shutdownPollingInterval
         );
         applicationLoader.start();
 
-        PathUpdateDebouncer restartDebouncer = new PathUpdateDebouncer(debounceDuration, pathUpdates -> {
+        PathUpdateDebouncer restartDebouncer = new PathUpdateDebouncer(configuration.debounceDuration, pathUpdates -> {
             logger.fine(() -> "Restarting due to " + pathUpdates);
             applicationLoader.restart();
         });
 
-        new FileSystemWatcher(classesOutputDirectories, fileSystemEvent -> {
+        new FileSystemWatcher(configuration.classesOutputDirectories, fileSystemEvent -> {
             if (restartMatchers.stream().anyMatch(matcher -> matcher.matches(fileSystemEvent.path()))) {
                 // Skip delete events for class files during recompilation
                 if (fileSystemEvent.eventType() != EventType.DELETED) {

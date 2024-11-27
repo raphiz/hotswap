@@ -34,13 +34,13 @@ class DevModeTest {
         greeterAppWriter.compile();
 
         // Start application
-        DevMode.startDevMode(
+        DevMode.startDevMode(new DevMode.Configuration(
                 PACKAGE_PREFIX + "." + CLASS_NAME,
                 List.of(PACKAGE_PREFIX),
                 Set.of(greeterAppWriter.getBuildDirectory()),
                 SHUTDOWN_POLLING_INTERVAL,
                 Duration.ofMillis(20)
-        );
+        ));
 
         // Wait for initial message
         greeterAppWriter.assertLoggedMessage("Hello World");
