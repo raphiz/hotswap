@@ -8,7 +8,10 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.time.Duration;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -29,27 +32,30 @@ public class DevMode {
             this.shutdownPollingInterval = shutdownPollingInterval;
             this.debounceDuration = debounceDuration;
         }
+
+        private static Configuration parse() {
+            String mainClass = System.getProperty("zackbumm.mainClass");
+            List<String> packagePrefixes = Arrays.stream(System.getProperty("zackbumm.packagePrefixes").split(",")).toList();
+            Set<Path> classesOutputDirectories = Arrays.stream(System.getProperty("zackbumm.classesOutputs").split(File.pathSeparator))
+                    .map(Path::of)
+                    .collect(Collectors.toSet());
+            Duration shutdownPollingInterval = parseDuration(System.getProperty("zackbumm.shutdownPollingInterval"), Duration.ofSeconds(5));
+            Duration debounceDuration = parseDuration(System.getProperty("zackbumm.debounceDuration"), Duration.ofMillis(10));
+
+            return new Configuration(
+                    mainClass,
+                    packagePrefixes,
+                    classesOutputDirectories,
+                    shutdownPollingInterval,
+                    debounceDuration
+            );
+        }
     }
 
 
     public static void main(String[] args) throws IOException {
         // TODO: Pass args to main app (and verify it!)
-        String mainClass = System.getProperty("zackbumm.mainClass");
-        List<String> packagePrefixes = Arrays.stream(System.getProperty("zackbumm.packagePrefixes").split(",")).toList();
-        Set<Path> classesOutputDirectories = Arrays.stream(System.getProperty("zackbumm.classesOutputs").split(File.pathSeparator))
-                .map(Path::of)
-                .collect(Collectors.toSet());
-        Duration shutdownPollingInterval = parseDuration(System.getProperty("zackbumm.shutdownPollingInterval"), Duration.ofSeconds(5));
-        Duration debounceDuration = parseDuration(System.getProperty("zackbumm.debounceDuration"), Duration.ofMillis(10));
-
-        Configuration configuration = new Configuration(
-                mainClass,
-                packagePrefixes,
-                classesOutputDirectories,
-                shutdownPollingInterval,
-                debounceDuration
-        );
-        startDevMode(configuration);
+        startDevMode(Configuration.parse());
     }
 
     public static void startDevMode(Configuration configuration) throws IOException {
