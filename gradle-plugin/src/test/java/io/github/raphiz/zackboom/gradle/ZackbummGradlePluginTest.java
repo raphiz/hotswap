@@ -27,8 +27,8 @@ class ZackbummGradlePluginTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"7.0", "8.11.1"})
-    void testRunTaskUntilMessageIsLogged(String gradleVersion) throws IOException {
+    @ValueSource(strings = {"8.1", "8.11.1"})
+    void testRunTaskUntilMessageIsLogged(String gradleVersion) throws IOException, InterruptedException {
         writeGradleFile();
         greeterAppWriter.writeCodeWithMessage("Hello World");
 
