@@ -24,7 +24,8 @@ class FileSystemWatcher {
     }
 
     private void watchRecursively(Path path, boolean notify) throws IOException {
-        if(!Files.exists(path)) return; // TODO: Wait for it to appear (AND TEST IT!)
+        // TODO: Handle creation/deletion of watchDirectories
+        if(!Files.exists(path)) return;
         Files.walkFileTree(path, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {

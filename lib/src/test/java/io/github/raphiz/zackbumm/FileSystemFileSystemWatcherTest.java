@@ -123,6 +123,24 @@ public class FileSystemFileSystemWatcherTest {
         );
     }
 
+    @Test
+    void itIgnoresNonExistingDirectories() throws Exception {
+        Set<Path> workspaces = manyWorkspaces();
+        Path file = random(workspaces).resolve("delete.txt");
+        workspaces.add(Path.of("/does/not/exist"));
+
+        performActionAndAssertEvents(
+                new HashSet<>(workspaces),
+                () -> Files.createFile(file),
+                changedPaths -> assertEquals(
+                        Collections.singleton(new FileSystemEvent(file, EventType.CREATED)),
+                        changedPaths
+                )
+        );
+
+
+    }
+
     private void performActionAndAssertEvents(
             Set<Path> workspaces,
             ThrowingRunnable action,
@@ -170,7 +188,10 @@ public class FileSystemFileSystemWatcherTest {
     }
 
     private Set<Path> manyWorkspaces() throws IOException {
-        return Set.of(Files.createTempDirectory(null), Files.createTempDirectory(null));
+        Set<Path> paths = new HashSet<>();
+        paths.add(Files.createTempDirectory(null));
+        paths.add(Files.createTempDirectory(null));
+        return paths;
     }
 
     @FunctionalInterface
