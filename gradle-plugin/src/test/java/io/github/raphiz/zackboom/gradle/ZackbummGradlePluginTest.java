@@ -26,6 +26,7 @@ class ZackbummGradlePluginTest {
         executorService.shutdownNow();
     }
 
+    // TODO: Test if it works with cache/isolated projects
     @ParameterizedTest
     @ValueSource(strings = {"8.1", "8.11.1"})
     void testRunTaskUntilMessageIsLogged(String gradleVersion) throws IOException, InterruptedException {
