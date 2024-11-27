@@ -72,6 +72,16 @@ class ZackbummGradlePluginTest {
                 application {
                     mainClass.set("%s.%s")
                 }
+                repositories {
+                    mavenCentral()
+                }
+                
+                // Dependencies are not actually needed, but it makes the
+                // classpath more realistic.
+                dependencies {
+                    implementation("org.slf4j:jul-to-slf4j:2.0.16")
+                    implementation("ch.qos.logback:logback-classic:1.4.14")
+                }
                 """.stripIndent().formatted(PACKAGE_PREFIX, CLASS_NAME)
         );
     }
