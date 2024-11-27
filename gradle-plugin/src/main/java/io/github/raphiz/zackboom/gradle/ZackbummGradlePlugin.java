@@ -18,6 +18,7 @@ public class ZackbummGradlePlugin implements Plugin<Project> {
             // TODO: Add more config options such as timeouts and additional directories to watch
             TaskProvider<JavaExec> taskProvider = project.getTasks().named("run", JavaExec.class);
             JavaExec task = taskProvider.get();
+            String packagePrefix = "com.example";
             String classesOutputs = taskProvider.get().getClasspath().getFiles().stream()
                     .map(File::getAbsolutePath)
                     .filter((file) -> !file.endsWith(".jar"))
@@ -29,7 +30,7 @@ public class ZackbummGradlePlugin implements Plugin<Project> {
             // Additional parameters to instruct the zackbumm devmode
             task.jvmArgs(
                     "-Dzackbumm.mainClass=" + task.getMainClass().get(),
-                    "-Dzackbumm.packagePrefixes=com.example",
+                    "-Dzackbumm.packagePrefixes=" + packagePrefix,
                     "-Dzackbumm.classesOutputs=" + classesOutputs
             );
 
