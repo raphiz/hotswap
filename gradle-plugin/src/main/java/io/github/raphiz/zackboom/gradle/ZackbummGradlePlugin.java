@@ -18,6 +18,10 @@ public class ZackbummGradlePlugin implements Plugin<Project> {
             // TODO: Add more config options such as timeouts and additional directories to watch
             TaskProvider<JavaExec> taskProvider = project.getTasks().named("run", JavaExec.class);
             JavaExec task = taskProvider.get();
+            String classesOutputs = taskProvider.get().getClasspath().getFiles().stream()
+                    .map(File::getAbsolutePath)
+                    .filter((file) -> !file.endsWith(".jar"))
+                    .collect(Collectors.joining(File.pathSeparator));
 
             // Add zackbumm library jar to the runtime classpath
             task.setClasspath(task.getClasspath().plus(project.files(zackBummLibraryJar())));
@@ -26,8 +30,7 @@ public class ZackbummGradlePlugin implements Plugin<Project> {
             task.jvmArgs(
                     "-Dzackbumm.mainClass=" + task.getMainClass().get(),
                     "-Dzackbumm.packagePrefixes=com.example",
-                    // TODO: Add all source sets instead
-                    "-Dzackbumm.classesOutputs=" + project.getLayout().getBuildDirectory().get().file("classes/java/main/")
+                    "-Dzackbumm.classesOutputs=" + classesOutputs
             );
 
             // Override the main class
