@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class DevMode {
     private static final Logger logger = LoggerHelpers.logger();
@@ -21,16 +22,18 @@ public class DevMode {
         // TODO: Pass args to main app (and verify it!)
         String mainClass = System.getProperty("zackbumm.mainClass");
         List<String> packagePrefixes = Arrays.stream(System.getProperty("zackbumm.packagePrefixes").split(",")).toList();
-        String[] classesOutputDirectories = System.getProperty("zackbumm.classesOutputs").split(File.pathSeparator);
+        Set<Path> classesOutputDirectories = Arrays.stream(System.getProperty("zackbumm.classesOutputs").split(File.pathSeparator))
+                .map(Path::of)
+                .collect(Collectors.toSet());
         Path workspace = Path.of(System.getProperty("user.dir")).toAbsolutePath();
 
         // TODO: Later -> Add support for jars (gradle modules)
-        URL[] classPathUrls = Arrays.stream(classesOutputDirectories)
+        URL[] classPathUrls = classesOutputDirectories.stream()
                 .map(DevMode::toUrl)
                 .toArray(URL[]::new);
 
-        List<PathMatcher> restartMatchers = Arrays.stream(classesOutputDirectories)
-                .map((it) -> Path.of(it).toAbsolutePath())
+        List<PathMatcher> restartMatchers = classesOutputDirectories.stream()
+                .map(Path::toAbsolutePath)
                 .map(it -> FileSystems.getDefault().getPathMatcher("glob:" + it + "/**"))
                 .toList();
 
@@ -77,9 +80,9 @@ public class DevMode {
         }).start();
     }
 
-    private static URL toUrl(String it) {
+    private static URL toUrl(Path path) {
         try {
-            return Path.of(it).toUri().toURL();
+            return path.toUri().toURL();
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
