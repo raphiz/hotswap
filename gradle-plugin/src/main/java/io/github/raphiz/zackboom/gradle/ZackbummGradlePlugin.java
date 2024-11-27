@@ -17,12 +17,13 @@ public class ZackbummGradlePlugin implements Plugin<Project> {
             // TODO: Make name configurable via extension
             // TODO: Add more config options such as timeouts and additional directories to watch
             TaskProvider<JavaExec> taskProvider = project.getTasks().named("run", JavaExec.class);
-            JavaExec task = taskProvider.get();
             String packagePrefix = "com.example";
             String classesOutputs = taskProvider.get().getClasspath().getFiles().stream()
                     .map(File::getAbsolutePath)
                     .filter((file) -> !file.endsWith(".jar"))
                     .collect(Collectors.joining(File.pathSeparator));
+
+            JavaExec task = taskProvider.get();
 
             // Add zackbumm library jar to the runtime classpath
             task.setClasspath(task.getClasspath().plus(project.files(zackBummLibraryJar())));
