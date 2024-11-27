@@ -7,6 +7,7 @@ import java.net.URLClassLoader;
 import java.nio.file.FileSystems;
 import java.time.Duration;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -41,7 +42,7 @@ class DevModeTest {
                 List.of(PACKAGE_PREFIX),
                 parentClassLoader.getURLs(),
                 Stream.of(greeterAppWriter.getBuildDirectory()).map(it -> FileSystems.getDefault().getPathMatcher("glob:" + it + "/**")).toList(),
-                greeterAppWriter.getBuildDirectory(),
+                Set.of(greeterAppWriter.getBuildDirectory()),
                 SHUTDOWN_POLLING_INTERVAL,
                 Duration.ofMillis(20)
         );

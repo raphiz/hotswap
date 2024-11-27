@@ -25,7 +25,6 @@ public class DevMode {
         Set<Path> classesOutputDirectories = Arrays.stream(System.getProperty("zackbumm.classesOutputs").split(File.pathSeparator))
                 .map(Path::of)
                 .collect(Collectors.toSet());
-        Path workspace = Path.of(System.getProperty("user.dir")).toAbsolutePath();
 
         // TODO: Later -> Add support for jars (gradle modules)
         URL[] classPathUrls = classesOutputDirectories.stream()
@@ -42,7 +41,7 @@ public class DevMode {
                 packagePrefixes,
                 classPathUrls,
                 restartMatchers,
-                workspace,
+                classesOutputDirectories,
                 Duration.ofSeconds(5), // TODO: Make configurable
                 Duration.ofMillis(10) // TODO: Make configurable
         );
@@ -53,7 +52,7 @@ public class DevMode {
             Collection<String> packagePrefixes,
             URL[] classPathUrls,
             List<PathMatcher> restartMatchers,
-            Path workspace,
+            Set<Path> watchPaths,
             Duration shutdownPollingInterval,
             Duration debounceDuration
     ) throws IOException {
@@ -70,7 +69,7 @@ public class DevMode {
             applicationLoader.restart();
         });
 
-        new FileSystemWatcher(Set.of(workspace), fileSystemEvent -> {
+        new FileSystemWatcher(watchPaths, fileSystemEvent -> {
             if (restartMatchers.stream().anyMatch(matcher -> matcher.matches(fileSystemEvent.path()))) {
                 // Skip delete events for class files during recompilation
                 if (fileSystemEvent.eventType() != EventType.DELETED) {
