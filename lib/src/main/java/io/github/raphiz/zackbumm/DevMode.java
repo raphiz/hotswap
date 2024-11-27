@@ -8,10 +8,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -25,13 +22,15 @@ public class DevMode {
         Set<Path> classesOutputDirectories = Arrays.stream(System.getProperty("zackbumm.classesOutputs").split(File.pathSeparator))
                 .map(Path::of)
                 .collect(Collectors.toSet());
+        Duration shutdownPollingInterval = parseDuration(System.getProperty("zackbumm.shutdownPollingInterval"), Duration.ofSeconds(5));
+        Duration debounceDuration = parseDuration(System.getProperty("zackbumm.debounceDuration"), Duration.ofMillis(10));
 
         startDevMode(
                 mainClass,
                 packagePrefixes,
                 classesOutputDirectories,
-                Duration.ofSeconds(5), // TODO: Make configurable
-                Duration.ofMillis(10) // TODO: Make configurable
+                shutdownPollingInterval,
+                debounceDuration
         );
     }
 
@@ -81,5 +80,11 @@ public class DevMode {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static Duration parseDuration(String property, Duration defaultValue) {
+        return Optional.ofNullable(property)
+                .map((it) -> Duration.ofMillis(Long.parseLong(it)))
+                .orElse(defaultValue);
     }
 }
