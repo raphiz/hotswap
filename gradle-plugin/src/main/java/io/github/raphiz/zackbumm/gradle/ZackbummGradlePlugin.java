@@ -24,7 +24,7 @@ public class ZackbummGradlePlugin implements Plugin<Project> {
             // TODO: Add more config options such as timeouts and additional directories to watch
             JavaExec task = getTask(project, extension);
             String packagePrefix = "com.example";
-            Duration debounceDuration = null;
+            Duration debounceDuration = extension.getDebounceDuration().get();
             Duration shutdownPollingInterval = null;
             String classDirectories = extension.getClassDirectories().get().getFiles()
                     .stream()
