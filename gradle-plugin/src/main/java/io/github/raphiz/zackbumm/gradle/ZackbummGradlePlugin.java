@@ -25,7 +25,7 @@ public class ZackbummGradlePlugin implements Plugin<Project> {
             String packagePrefix = "com.example";
             Duration debounceDuration = null;
             Duration shutdownPollingInterval = null;
-            String classesOutputs = task.getClasspath().getFiles().stream()
+            String classDirectories = task.getClasspath().getFiles().stream()
                     .map(File::getAbsolutePath)
                     .filter((file) -> !file.endsWith(".jar"))
                     .collect(Collectors.joining(File.pathSeparator));
@@ -36,7 +36,7 @@ public class ZackbummGradlePlugin implements Plugin<Project> {
             // Additional parameters to instruct the zackbumm devmode
             Map<String, String> configuration = new HashMap<>();
             configuration.put("zackbumm.mainClass", task.getMainClass().get());
-            configuration.put("zackbumm.classesOutputs", classesOutputs);
+            configuration.put("zackbumm.classDirectories", classDirectories);
             configuration.put("zackbumm.packagePrefixes", packagePrefix);
             if (debounceDuration != null) {
                 configuration.put("zackbumm.debounceDuration", debounceDuration.toMillis() + "");

@@ -50,19 +50,19 @@ class DevModeConfigTest {
     }
 
     @Test
-    void setsSetOfClassesOutputDirectories() {
+    void setsSetOfClassDirectories() {
         Map<String, String> properties = validConfigurationProperties();
-        properties.put("zackbumm.classesOutputs", "/path/to/foo" + File.pathSeparator + "/path/to/bar" + File.pathSeparator + "relative/path");
+        properties.put("zackbumm.classDirectories", "/path/to/foo" + File.pathSeparator + "/path/to/bar" + File.pathSeparator + "relative/path");
 
         DevMode.Configuration configuration = parse(properties);
 
-        assertEquals(Set.of(Path.of("/path/to/foo"), Path.of("/path/to/bar"), Path.of("relative/path")), configuration.classesOutputDirectories);
+        assertEquals(Set.of(Path.of("/path/to/foo"), Path.of("/path/to/bar"), Path.of("relative/path")), configuration.classDirectories);
     }
 
     @Test
     void failsIfClassesOutputDirectoriesIfNotProvided() {
         Map<String, String> properties = validConfigurationProperties();
-        properties.remove("zackbumm.classesOutputs");
+        properties.remove("zackbumm.classDirectories");
 
         assertThrows(IllegalArgumentException.class, () -> parse(properties));
     }
@@ -148,7 +148,7 @@ class DevModeConfigTest {
     private static Map<String, String> validConfigurationProperties() {
         return new HashMap<>(Map.of(
                 "zackbumm.mainClass", "com.example.MainClass",
-                "zackbumm.classesOutputs", "build/classes",
+                "zackbumm.classDirectories", "build/classes",
                 "zackbumm.packagePrefixes", "com.example.foo.bar"
         )
         );

@@ -18,14 +18,14 @@ public class DevMode {
     public static class Configuration {
         final String mainClass;
         final Set<String> packagePrefixes;
-        final Set<Path> classesOutputDirectories;
+        final Set<Path> classDirectories;
         final Duration shutdownPollingInterval;
         final Duration debounceDuration;
 
-        Configuration(String mainClass, Set<String> packagePrefixes, Set<Path> classesOutputDirectories, Duration shutdownPollingInterval, Duration debounceDuration) {
+        Configuration(String mainClass, Set<String> packagePrefixes, Set<Path> classDirectories, Duration shutdownPollingInterval, Duration debounceDuration) {
             this.mainClass = mainClass;
             this.packagePrefixes = packagePrefixes;
-            this.classesOutputDirectories = classesOutputDirectories;
+            this.classDirectories = classDirectories;
             this.shutdownPollingInterval = shutdownPollingInterval;
             this.debounceDuration = debounceDuration;
         }
@@ -33,11 +33,11 @@ public class DevMode {
         public static Configuration parse(Map<String, String> properties) {
             String mainClass = Objects.requireNonNull(properties.get("zackbumm.mainClass"), "Main class must be provided");
 
-            Set<Path> classesOutputDirectories = Arrays.stream(properties.getOrDefault("zackbumm.classesOutputs", "").split(File.pathSeparator))
+            Set<Path> classDirectories = Arrays.stream(properties.getOrDefault("zackbumm.classDirectories", "").split(File.pathSeparator))
                     .filter((it) -> !it.isBlank())
                     .map(Path::of)
                     .collect(Collectors.toSet());
-            if (classesOutputDirectories.isEmpty()) {
+            if (classDirectories.isEmpty()) {
                 throw new IllegalArgumentException("At least one output directory to watch must be provided");
             }
 
@@ -53,7 +53,7 @@ public class DevMode {
             return new Configuration(
                     mainClass,
                     packagePrefixes,
-                    classesOutputDirectories,
+                    classDirectories,
                     shutdownPollingInterval,
                     debounceDuration
             );
@@ -75,11 +75,11 @@ public class DevMode {
 
     public static void startDevMode(Configuration configuration) throws IOException {
         // TODO: Later -> Add support for jars (gradle modules)
-        URL[] classPathUrls = configuration.classesOutputDirectories.stream()
+        URL[] classPathUrls = configuration.classDirectories.stream()
                 .map(DevMode::toUrl)
                 .toArray(URL[]::new);
 
-        List<PathMatcher> restartMatchers = configuration.classesOutputDirectories.stream()
+        List<PathMatcher> restartMatchers = configuration.classDirectories.stream()
                 .map(Path::toAbsolutePath)
                 .map(it -> FileSystems.getDefault().getPathMatcher("glob:" + it + "/**"))
                 .toList();
@@ -97,7 +97,7 @@ public class DevMode {
             applicationLoader.restart();
         });
 
-        new FileSystemWatcher(configuration.classesOutputDirectories, fileSystemEvent -> {
+        new FileSystemWatcher(configuration.classDirectories, fileSystemEvent -> {
             if (restartMatchers.stream().anyMatch(matcher -> matcher.matches(fileSystemEvent.path()))) {
                 // Skip delete events for class files during recompilation
                 if (fileSystemEvent.eventType() != EventType.DELETED) {
