@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,7 +35,7 @@ class DevModeTest {
         // Start application
         DevMode.startDevMode(new DevMode.Configuration(
                 PACKAGE_PREFIX + "." + CLASS_NAME,
-                List.of(PACKAGE_PREFIX),
+                Set.of(PACKAGE_PREFIX),
                 Set.of(greeterAppWriter.getBuildDirectory()),
                 SHUTDOWN_POLLING_INTERVAL,
                 Duration.ofMillis(20)

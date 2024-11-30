@@ -17,12 +17,12 @@ public class DevMode {
 
     public static class Configuration {
         final String mainClass;
-        final List<String> packagePrefixes;
+        final Set<String> packagePrefixes;
         final Set<Path> classesOutputDirectories;
         final Duration shutdownPollingInterval;
         final Duration debounceDuration;
 
-        Configuration(String mainClass, List<String> packagePrefixes, Set<Path> classesOutputDirectories, Duration shutdownPollingInterval, Duration debounceDuration) {
+        Configuration(String mainClass, Set<String> packagePrefixes, Set<Path> classesOutputDirectories, Duration shutdownPollingInterval, Duration debounceDuration) {
             this.mainClass = mainClass;
             this.packagePrefixes = packagePrefixes;
             this.classesOutputDirectories = classesOutputDirectories;
@@ -30,14 +30,25 @@ public class DevMode {
             this.debounceDuration = debounceDuration;
         }
 
-        private static Configuration parse(Map<String, String> properties) {
-            String mainClass = properties.get("zackbumm.mainClass");
-            List<String> packagePrefixes = Arrays.stream(properties.get("zackbumm.packagePrefixes").split(",")).toList();
-            Set<Path> classesOutputDirectories = Arrays.stream(properties.get("zackbumm.classesOutputs").split(File.pathSeparator))
+        public static Configuration parse(Map<String, String> properties) {
+            String mainClass = Objects.requireNonNull(properties.get("zackbumm.mainClass"), "Main class must be provided");
+
+            Set<Path> classesOutputDirectories = Arrays.stream(properties.getOrDefault("zackbumm.classesOutputs", "").split(File.pathSeparator))
+                    .filter((it) -> !it.isBlank())
                     .map(Path::of)
                     .collect(Collectors.toSet());
-            Duration shutdownPollingInterval = parseDuration(properties.get("zackbumm.shutdownPollingInterval"), Duration.ofSeconds(5));
-            Duration debounceDuration = parseDuration(properties.get("zackbumm.debounceDuration"), Duration.ofMillis(10));
+            if (classesOutputDirectories.isEmpty()) {
+                throw new IllegalArgumentException("At least one output directory to watch must be provided");
+            }
+
+            Set<String> packagePrefixes = Arrays.stream(properties.getOrDefault("zackbumm.packagePrefixes", "").split(","))
+                    .filter((it) -> !it.isBlank())
+                    .collect(Collectors.toSet());
+            if (packagePrefixes.isEmpty()) {
+                throw new IllegalArgumentException("At least one package prefix must be provided");
+            }
+            Duration shutdownPollingInterval = parseDuration(emptyToNull(properties.get("zackbumm.shutdownPollingInterval")), Duration.ofSeconds(5));
+            Duration debounceDuration = parseDuration(emptyToNull(properties.get("zackbumm.debounceDuration")), Duration.ofMillis(100));
 
             return new Configuration(
                     mainClass,
@@ -46,6 +57,10 @@ public class DevMode {
                     shutdownPollingInterval,
                     debounceDuration
             );
+        }
+
+        private static String emptyToNull(String value) {
+            return (value == null || value.isEmpty()) ? null : value;
         }
     }
 
