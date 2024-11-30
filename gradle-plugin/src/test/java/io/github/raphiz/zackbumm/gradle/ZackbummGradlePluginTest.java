@@ -76,6 +76,9 @@ class ZackbummGradlePluginTest {
                 repositories {
                     mavenCentral()
                 }
+                zackbumm {
+                    packagePrefixes.set(listOf("com.example"));
+                }
                 
                 // Dependencies are not actually needed, but it makes the
                 // classpath more realistic.

@@ -1,6 +1,7 @@
 package io.github.raphiz.zackbumm.gradle;
 
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 
 import java.time.Duration;
@@ -13,4 +14,6 @@ public interface ZackbummExtension {
     Property<Duration> getDebounceDuration();
 
     Property<Duration> getShutdownPollingInterval();
+
+    ListProperty<String> getPackagePrefixes();
 }

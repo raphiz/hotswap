@@ -9,6 +9,7 @@ import java.io.File;
 import java.net.URL;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -21,7 +22,7 @@ public class ZackbummGradlePlugin implements Plugin<Project> {
 
         target.afterEvaluate((project) -> {
             JavaExec task = getTask(project, extension);
-            String packagePrefix = "com.example";
+            List<String> packagePrefix = extension.getPackagePrefixes().get();
             Duration debounceDuration = extension.getDebounceDuration().get();
             Duration shutdownPollingInterval = extension.getShutdownPollingInterval().get();
             String classDirectories = extension.getClassDirectories().get().getFiles()
@@ -36,7 +37,7 @@ public class ZackbummGradlePlugin implements Plugin<Project> {
             Map<String, String> configuration = new HashMap<>();
             configuration.put("zackbumm.mainClass", task.getMainClass().get());
             configuration.put("zackbumm.classDirectories", classDirectories);
-            configuration.put("zackbumm.packagePrefixes", packagePrefix);
+            configuration.put("zackbumm.packagePrefixes", String.join(",", packagePrefix));
             if (debounceDuration != null) {
                 configuration.put("zackbumm.debounceDuration", debounceDuration.toMillis() + "");
             }
