@@ -25,7 +25,7 @@ public class ZackbummGradlePlugin implements Plugin<Project> {
             JavaExec task = getTask(project, extension);
             String packagePrefix = "com.example";
             Duration debounceDuration = extension.getDebounceDuration().get();
-            Duration shutdownPollingInterval = null;
+            Duration shutdownPollingInterval = extension.getShutdownPollingInterval().get();
             String classDirectories = extension.getClassDirectories().get().getFiles()
                     .stream()
                     .map(File::getAbsolutePath)

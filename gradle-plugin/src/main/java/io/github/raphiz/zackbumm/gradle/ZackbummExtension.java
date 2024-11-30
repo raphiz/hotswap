@@ -9,4 +9,5 @@ public interface ZackbummExtension {
     Property<String> getTaskName();
     Property<FileCollection> getClassDirectories();
     Property<Duration> getDebounceDuration();
+    Property<Duration> getShutdownPollingInterval();
 }
