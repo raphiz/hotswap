@@ -1,4 +1,4 @@
-package io.github.raphiz.zackboom.gradle;
+package io.github.raphiz.zackbumm.gradle;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;

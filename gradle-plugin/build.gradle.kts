@@ -6,8 +6,8 @@ plugins {
 gradlePlugin {
     plugins {
         create("my-binary-plugin") {
-            id = "io.github.raphiz.zackboom"
-            implementationClass = "io.github.raphiz.zackboom.gradle.ZackbummGradlePlugin"
+            id = "io.github.raphiz.zackbumm"
+            implementationClass = "io.github.raphiz.zackbumm.gradle.ZackbummGradlePlugin"
         }
     }
 }

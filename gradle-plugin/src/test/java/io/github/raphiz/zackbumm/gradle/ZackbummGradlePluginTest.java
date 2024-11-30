@@ -1,4 +1,4 @@
-package io.github.raphiz.zackboom.gradle;
+package io.github.raphiz.zackbumm.gradle;
 
 import io.github.raphiz.zackbumm.GreeterAppWriter;
 import org.gradle.testkit.runner.GradleRunner;
@@ -68,7 +68,7 @@ class ZackbummGradlePluginTest {
         Files.writeString(buildFile, """
                 plugins {
                     application
-                    id("io.github.raphiz.zackboom")
+                    id("io.github.raphiz.zackbumm")
                 }
                 application {
                     mainClass.set("%s.%s")
