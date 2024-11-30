@@ -8,6 +8,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.net.URL;
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ZackbummGradlePlugin implements Plugin<Project> {
@@ -18,6 +21,8 @@ public class ZackbummGradlePlugin implements Plugin<Project> {
             // TODO: Add more config options such as timeouts and additional directories to watch
             TaskProvider<JavaExec> taskProvider = project.getTasks().named("run", JavaExec.class);
             String packagePrefix = "com.example";
+            Duration debounceDuration = null;
+            Duration shutdownPollingInterval = null;
             String classesOutputs = taskProvider.get().getClasspath().getFiles().stream()
                     .map(File::getAbsolutePath)
                     .filter((file) -> !file.endsWith(".jar"))
@@ -29,11 +34,17 @@ public class ZackbummGradlePlugin implements Plugin<Project> {
             task.setClasspath(task.getClasspath().plus(project.files(zackBummLibraryJar())));
 
             // Additional parameters to instruct the zackbumm devmode
-            task.jvmArgs(
-                    "-Dzackbumm.mainClass=" + task.getMainClass().get(),
-                    "-Dzackbumm.packagePrefixes=" + packagePrefix,
-                    "-Dzackbumm.classesOutputs=" + classesOutputs
-            );
+            Map<String, String> configuration = new HashMap<>();
+            configuration.put("zackbumm.mainClass", task.getMainClass().get());
+            configuration.put("zackbumm.classesOutputs", classesOutputs);
+            configuration.put("zackbumm.packagePrefixes", packagePrefix);
+            if (debounceDuration != null) {
+                configuration.put("zackbumm.debounceDuration", debounceDuration.toMillis() + "");
+            }
+            if (shutdownPollingInterval != null) {
+                configuration.put("zackbumm.shutdownPollingInterval", shutdownPollingInterval.toMillis() + "");
+            }
+            task.systemProperties(configuration);
 
             // Override the main class
             task.getMainClass().set("io.github.raphiz.zackbumm.DevMode");
