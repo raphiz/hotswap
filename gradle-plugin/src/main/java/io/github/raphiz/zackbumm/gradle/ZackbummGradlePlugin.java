@@ -22,7 +22,7 @@ public class ZackbummGradlePlugin implements Plugin<Project> {
 
         target.afterEvaluate((project) -> {
             JavaExec task = getTask(project, extension);
-            List<String> packagePrefix = extension.getPackagePrefixes().get();
+            List<String> packagePrefixes = extension.getPackagePrefixes().get();
             Duration debounceDuration = extension.getDebounceDuration().getOrNull();
             Duration shutdownPollingInterval = extension.getShutdownPollingInterval().getOrNull();
             String classDirectories = extension.getClassDirectories().get().getFiles()
@@ -37,7 +37,7 @@ public class ZackbummGradlePlugin implements Plugin<Project> {
             Map<String, String> configuration = new HashMap<>();
             configuration.put("zackbumm.mainClass", task.getMainClass().get());
             configuration.put("zackbumm.classDirectories", classDirectories);
-            configuration.put("zackbumm.packagePrefixes", String.join(",", packagePrefix));
+            configuration.put("zackbumm.packagePrefixes", String.join(",", packagePrefixes));
             if (debounceDuration != null) {
                 configuration.put("zackbumm.debounceDuration", debounceDuration.toMillis() + "");
             }
