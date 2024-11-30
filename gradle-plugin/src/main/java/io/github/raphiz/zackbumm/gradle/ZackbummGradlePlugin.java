@@ -20,8 +20,6 @@ public class ZackbummGradlePlugin implements Plugin<Project> {
         extension.getClassDirectories().convention(target.provider(() -> getTask(target, extension).getClasspath().filter((file) -> !file.isDirectory())));
 
         target.afterEvaluate((project) -> {
-            // TODO: Make name configurable via extension
-            // TODO: Add more config options such as timeouts and additional directories to watch
             JavaExec task = getTask(project, extension);
             String packagePrefix = "com.example";
             Duration debounceDuration = extension.getDebounceDuration().get();
