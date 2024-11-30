@@ -47,7 +47,7 @@ class ZackbummGradlePluginTest {
         // Wait for the output to appear.
         // The timeout must be rather large because the entire gradle distribution must be downloaded
         // and extracted on the first run
-        greeterAppWriter.assertLoggedMessage("Hello World", Duration.ofMinutes(2));
+        greeterAppWriter.assertOutputsMessage("Hello World", Duration.ofMinutes(2));
 
         // Update greeter message and recompile
         greeterAppWriter.writeCodeWithMessage("Hello Universe");
@@ -60,7 +60,7 @@ class ZackbummGradlePluginTest {
                 .build();
 
         // Wait for the output to appear.
-        greeterAppWriter.assertLoggedMessage("Hello Universe");
+        greeterAppWriter.assertOutputsMessage("Hello Universe");
     }
 
     private void writeGradleFile() throws IOException {

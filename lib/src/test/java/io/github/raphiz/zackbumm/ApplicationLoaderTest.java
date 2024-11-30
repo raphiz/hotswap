@@ -44,7 +44,7 @@ public class ApplicationLoaderTest {
                 SHUTDOWN_POLLING_INTERVAL
         );
         applicationLoader.start();
-        greeterAppWriter.assertLoggedMessage("Hello World");
+        greeterAppWriter.assertOutputsMessage("Hello World");
         capturingLogHandler.assertLogRecords(
                 new LogRecord(Level.INFO, "Starting Application com.example.HelloWorldApp")
         );
@@ -63,7 +63,7 @@ public class ApplicationLoaderTest {
                 new LogRecord(Level.INFO, "Starting Application com.example.HelloWorldApp")
         );
 
-        greeterAppWriter.assertLoggedMessage("Hello Universe");         // TODO: Renae assertOutputsMessage
+        greeterAppWriter.assertOutputsMessage("Hello Universe");
     }
 
     @Test

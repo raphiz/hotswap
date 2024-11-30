@@ -42,7 +42,7 @@ class DevModeTest {
         ));
 
         // Wait for initial message
-        greeterAppWriter.assertLoggedMessage("Hello World");
+        greeterAppWriter.assertOutputsMessage("Hello World");
         capturingLogHandler.assertLogRecords(
                 new LogRecord(Level.INFO, "Starting Application com.example.HelloWorldApp")
         );
@@ -52,7 +52,7 @@ class DevModeTest {
         greeterAppWriter.compile();
 
         // Wait for updated message
-        greeterAppWriter.assertLoggedMessage("Hello Universe");
+        greeterAppWriter.assertOutputsMessage("Hello Universe");
 
         capturingLogHandler.assertLogRecords(
                 new LogRecord(Level.FINE, "Restarting due to PathUpdates[created=[], modified=[" + greeterAppWriter.getBuildDirectory() + "/com/example/HelloWorldApp.class], deleted=[]]"),

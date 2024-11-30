@@ -125,11 +125,11 @@ public class GreeterAppWriter implements AutoCloseable {
         assertEquals(0, process.exitValue(), "Compilation failed with unexpected exit code");
     }
 
-    public void assertLoggedMessage(String message) {
-        assertLoggedMessage(message, Duration.ofSeconds(5));
+    public void assertOutputsMessage(String message) {
+        assertOutputsMessage(message, Duration.ofSeconds(5));
     }
 
-    public void assertLoggedMessage(String message, Duration timeout) {
+    public void assertOutputsMessage(String message, Duration timeout) {
         try {
             Awaitility.await()
                     .atMost(timeout)
