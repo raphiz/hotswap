@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 public class ZackbummGradlePlugin implements Plugin<Project> {
     @Override
     public void apply(@NotNull Project target) {
+        target.getExtensions().create("zackbumm", ZackbummExtension.class);
         target.afterEvaluate((project) -> {
             // TODO: Make name configurable via extension
             // TODO: Add more config options such as timeouts and additional directories to watch
