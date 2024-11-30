@@ -17,17 +17,18 @@ public class ZackbummGradlePlugin implements Plugin<Project> {
     public void apply(@NotNull Project target) {
         ZackbummExtension extension = target.getExtensions().create("zackbumm", ZackbummExtension.class);
         extension.getTaskName().convention("run");
+        extension.getClassDirectories().convention(target.provider(() -> getTask(target, extension).getClasspath().filter((file) -> !file.isDirectory())));
 
         target.afterEvaluate((project) -> {
             // TODO: Make name configurable via extension
             // TODO: Add more config options such as timeouts and additional directories to watch
-            JavaExec task = target.getTasks().named(extension.getTaskName().get(), JavaExec.class).get();
+            JavaExec task = getTask(project, extension);
             String packagePrefix = "com.example";
             Duration debounceDuration = null;
             Duration shutdownPollingInterval = null;
-            String classDirectories = task.getClasspath().getFiles().stream()
+            String classDirectories = extension.getClassDirectories().get().getFiles()
+                    .stream()
                     .map(File::getAbsolutePath)
-                    .filter((file) -> !file.endsWith(".jar"))
                     .collect(Collectors.joining(File.pathSeparator));
 
             // Add zackbumm library jar to the runtime classpath
@@ -49,6 +50,10 @@ public class ZackbummGradlePlugin implements Plugin<Project> {
             // Override the main class
             task.getMainClass().set("io.github.raphiz.zackbumm.DevMode");
         });
+    }
+
+    private static @NotNull JavaExec getTask(@NotNull Project target, ZackbummExtension extension) {
+        return target.getTasks().named(extension.getTaskName().get(), JavaExec.class).get();
     }
 
     private File zackBummLibraryJar() {
