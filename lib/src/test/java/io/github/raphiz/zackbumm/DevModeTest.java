@@ -29,12 +29,13 @@ class DevModeTest {
     @Test
     void testApplicationLoaderRestartsApplication() throws Exception {
         // Compile initial program version
-        greeterAppWriter.writeCodeWithMessage("Hello World");
+        greeterAppWriter.writeCodeWithMessage("Hello");
         greeterAppWriter.compile();
 
         // Start application
         DevMode.startDevMode(new DevMode.Configuration(
                 PACKAGE_PREFIX + "." + CLASS_NAME,
+                new String[]{"World", "Universe"},
                 Set.of(PACKAGE_PREFIX),
                 Set.of(greeterAppWriter.getBuildDirectory()),
                 SHUTDOWN_POLLING_INTERVAL,
@@ -42,17 +43,17 @@ class DevModeTest {
         ));
 
         // Wait for initial message
-        greeterAppWriter.assertOutputsMessage("Hello World");
+        greeterAppWriter.assertOutputsMessage("Hello World, Universe");
         capturingLogHandler.assertLogRecords(
                 new LogRecord(Level.INFO, "Starting Application com.example.HelloWorldApp")
         );
 
         // Recompile - the watcher and debouncers should trigger exactly one reload
-        greeterAppWriter.writeCodeWithMessage("Hello Universe");
+        greeterAppWriter.writeCodeWithMessage("Hi");
         greeterAppWriter.compile();
 
         // Wait for updated message
-        greeterAppWriter.assertOutputsMessage("Hello Universe");
+        greeterAppWriter.assertOutputsMessage("Hi World, Universe");
 
         capturingLogHandler.assertLogRecords(
                 new LogRecord(Level.FINE, "Restarting due to PathUpdates[created=[], modified=[" + greeterAppWriter.getBuildDirectory() + "/com/example/HelloWorldApp.class], deleted=[]]"),

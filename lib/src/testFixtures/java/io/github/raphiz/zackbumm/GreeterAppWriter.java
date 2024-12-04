@@ -66,8 +66,9 @@ public class GreeterAppWriter implements AutoCloseable {
                         if(!isClassAvailable("io.github.raphiz.zackbumm.DevMode")){
                             System.out.println("IMPORTANT: DevMode class is not on the classpath!");
                         }
+                        String argsAsString = String.join(", ", args);
                         while (true) {
-                            Files.writeString(Path.of("%s"), "%s");
+                            Files.writeString(Path.of("%s"), String.join(" ", "%s", argsAsString));
                             try {
                                 Thread.sleep(1000);
                             } catch (InterruptedException e) {

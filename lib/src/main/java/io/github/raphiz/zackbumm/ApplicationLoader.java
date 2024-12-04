@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 public class ApplicationLoader {
 
     private final String mainClass;
+    private final String[] args;
     private final Collection<String> packagePrefixes;
     private final URL[] urls;
     private final Duration shutdownPollingInterval;
@@ -17,8 +18,9 @@ public class ApplicationLoader {
     private Thread appThread;
     private ClassLoader classLoader;
 
-    public ApplicationLoader(String mainClass, Collection<String> packagePrefixes, URL[] urls, Duration shutdownPollingInterval) {
+    public ApplicationLoader(String mainClass, String[] args, Collection<String> packagePrefixes, URL[] urls, Duration shutdownPollingInterval) {
         this.mainClass = mainClass;
+        this.args = args;
         this.packagePrefixes = packagePrefixes;
         this.urls = urls;
         this.shutdownPollingInterval = shutdownPollingInterval;
@@ -42,7 +44,7 @@ public class ApplicationLoader {
             try {
                 Class<?> clazz = classLoader.loadClass(mainClass);
                 Method mainMethod = clazz.getMethod("main", String[].class);
-                mainMethod.invoke(null, (Object) new String[]{});
+                mainMethod.invoke(null, (Object) args);
             } catch (Exception e) {
                 if (e.getCause() instanceof InterruptedException) {
                     logger.fine("App Thread was interrupted");

@@ -17,20 +17,22 @@ public class DevMode {
 
     public static class Configuration {
         final String mainClass;
+        final String[] args;
         final Set<String> packagePrefixes;
         final Set<Path> classDirectories;
         final Duration shutdownPollingInterval;
         final Duration debounceDuration;
 
-        Configuration(String mainClass, Set<String> packagePrefixes, Set<Path> classDirectories, Duration shutdownPollingInterval, Duration debounceDuration) {
+        Configuration(String mainClass, String[] args, Set<String> packagePrefixes, Set<Path> classDirectories, Duration shutdownPollingInterval, Duration debounceDuration) {
             this.mainClass = mainClass;
+            this.args = args;
             this.packagePrefixes = packagePrefixes;
             this.classDirectories = classDirectories;
             this.shutdownPollingInterval = shutdownPollingInterval;
             this.debounceDuration = debounceDuration;
         }
 
-        public static Configuration parse(Map<String, String> properties) {
+        public static Configuration parse(Map<String, String> properties, String[] args) {
             String mainClass = Objects.requireNonNull(properties.get("zackbumm.mainClass"), "Main class must be provided");
 
             Set<Path> classDirectories = Arrays.stream(properties.getOrDefault("zackbumm.classDirectories", "").split(File.pathSeparator))
@@ -52,6 +54,7 @@ public class DevMode {
 
             return new Configuration(
                     mainClass,
+                    args,
                     packagePrefixes,
                     classDirectories,
                     shutdownPollingInterval,
@@ -66,10 +69,9 @@ public class DevMode {
 
 
     public static void main(String[] args) throws IOException {
-        // TODO: Pass args to main app (and verify it!)
         Map<String, String> systemProperties = System.getProperties().entrySet().stream()
                 .collect(Collectors.toMap(e -> (String) e.getKey(), e -> (String) e.getValue()));
-        Configuration configuration = Configuration.parse(systemProperties);
+        Configuration configuration = Configuration.parse(systemProperties, args);
         startDevMode(configuration);
     }
 
@@ -86,6 +88,7 @@ public class DevMode {
 
         ApplicationLoader applicationLoader = new ApplicationLoader(
                 configuration.mainClass,
+                configuration.args,
                 configuration.packagePrefixes,
                 classPathUrls,
                 configuration.shutdownPollingInterval

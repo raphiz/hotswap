@@ -33,24 +33,25 @@ public class ApplicationLoaderTest {
     @Test
     void testApplicationLoaderRestartsApplication() throws Exception {
         // Compile initial program version
-        greeterAppWriter.writeCodeWithMessage("Hello World");
+        greeterAppWriter.writeCodeWithMessage("Hello");
         greeterAppWriter.compile();
 
         // Start application via ApplicationLoader
         applicationLoader = new ApplicationLoader(
                 PACKAGE_PREFIX + "." + CLASS_NAME,
+                new String[]{"World", "Universe"},
                 List.of(PACKAGE_PREFIX),
                 parentClassLoader.getURLs(),
                 SHUTDOWN_POLLING_INTERVAL
         );
         applicationLoader.start();
-        greeterAppWriter.assertOutputsMessage("Hello World");
+        greeterAppWriter.assertOutputsMessage("Hello World, Universe");
         capturingLogHandler.assertLogRecords(
                 new LogRecord(Level.INFO, "Starting Application com.example.HelloWorldApp")
         );
 
         // Change the greeter message
-        greeterAppWriter.writeCodeWithMessage("Hello Universe");
+        greeterAppWriter.writeCodeWithMessage("Hi");
         greeterAppWriter.compile();
 
         // Restart the application
@@ -63,7 +64,7 @@ public class ApplicationLoaderTest {
                 new LogRecord(Level.INFO, "Starting Application com.example.HelloWorldApp")
         );
 
-        greeterAppWriter.assertOutputsMessage("Hello Universe");
+        greeterAppWriter.assertOutputsMessage("Hi World, Universe");
     }
 
     @Test
@@ -75,6 +76,7 @@ public class ApplicationLoaderTest {
         // Start application via ApplicationLoader
         applicationLoader = new ApplicationLoader(
                 PACKAGE_PREFIX + "." + CLASS_NAME,
+                new String[]{},
                 List.of(PACKAGE_PREFIX),
                 parentClassLoader.getURLs(),
                 SHUTDOWN_POLLING_INTERVAL
