@@ -26,7 +26,6 @@ class ZackbummGradlePluginTest {
         executorService.shutdownNow();
     }
 
-    // TODO: Test if it works with cache/isolated projects
     @ParameterizedTest
     @ValueSource(strings = {"8.1", "8.11.1"})
     void testRunTaskUntilMessageIsLogged(String gradleVersion) throws IOException, InterruptedException {
@@ -88,6 +87,12 @@ class ZackbummGradlePluginTest {
                 }
                 """.stripIndent().formatted(PACKAGE_PREFIX, CLASS_NAME)
         );
+        // Enable configuration cache and isolated projects to capture related issues
+        Path propertiesFile = greeterAppWriter.getProjectDirectory().resolve("gradle.properties");
+        Files.writeString(propertiesFile, """
+            org.gradle.configuration-cache=true
+            org.gradle.unsafe.isolated-projects=true
+        """.stripIndent());
     }
 
 }
