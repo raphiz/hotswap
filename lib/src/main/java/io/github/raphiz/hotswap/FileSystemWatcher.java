@@ -1,4 +1,4 @@
-package io.github.raphiz.zackbumm;
+package io.github.raphiz.hotswap;
 
 import java.io.IOException;
 import java.nio.file.*;

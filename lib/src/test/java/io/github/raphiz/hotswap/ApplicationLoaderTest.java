@@ -1,4 +1,4 @@
-package io.github.raphiz.zackbumm;
+package io.github.raphiz.hotswap;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static io.github.raphiz.zackbumm.GreeterAppWriter.CLASS_NAME;
-import static io.github.raphiz.zackbumm.GreeterAppWriter.PACKAGE_PREFIX;
+import static io.github.raphiz.hotswap.GreeterAppWriter.CLASS_NAME;
+import static io.github.raphiz.hotswap.GreeterAppWriter.PACKAGE_PREFIX;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ApplicationLoaderTest {

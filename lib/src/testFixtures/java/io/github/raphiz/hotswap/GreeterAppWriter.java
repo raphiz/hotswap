@@ -1,4 +1,4 @@
-package io.github.raphiz.zackbumm;
+package io.github.raphiz.hotswap;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
@@ -63,7 +63,7 @@ public class GreeterAppWriter implements AutoCloseable {
                 public class %s {
                     public static void main(String[] args) throws Exception {
                         System.out.println("Greeter app started");
-                        if(!isClassAvailable("io.github.raphiz.zackbumm.DevMode")){
+                        if(!isClassAvailable("io.github.raphiz.hotswap.DevMode")){
                             System.out.println("IMPORTANT: DevMode class is not on the classpath!");
                         }
                         String argsAsString = String.join(", ", args);

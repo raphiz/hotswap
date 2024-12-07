@@ -1,13 +1,13 @@
 plugins {
-    id("io.github.raphiz.zackbumm.java-library")
+    id("io.github.raphiz.hotswap.java-library")
     `java-gradle-plugin`
 }
 
 gradlePlugin {
     plugins {
-        create("my-binary-plugin") {
-            id = "io.github.raphiz.zackbumm"
-            implementationClass = "io.github.raphiz.zackbumm.gradle.ZackbummGradlePlugin"
+        create("hotswap") {
+            id = "io.github.raphiz.hotswap"
+            implementationClass = "io.github.raphiz.hotswap.gradle.HotswapGradlePlugin"
         }
     }
 }

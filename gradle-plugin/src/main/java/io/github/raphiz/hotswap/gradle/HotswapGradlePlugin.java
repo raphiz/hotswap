@@ -1,4 +1,4 @@
-package io.github.raphiz.zackbumm.gradle;
+package io.github.raphiz.hotswap.gradle;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ZackbummGradlePlugin implements Plugin<Project> {
+public class HotswapGradlePlugin implements Plugin<Project> {
     @Override
     public void apply(@NotNull Project target) {
-        ZackbummExtension extension = target.getExtensions().create("zackbumm", ZackbummExtension.class);
+        HotswapExtension extension = target.getExtensions().create("hotswap", HotswapExtension.class);
         extension.getTaskName().convention("run");
         extension.getClassDirectories().convention(target.provider(() -> getTask(target, extension).getClasspath().filter((file) -> !file.isDirectory())));
 
@@ -30,34 +30,34 @@ public class ZackbummGradlePlugin implements Plugin<Project> {
                     .map(File::getAbsolutePath)
                     .collect(Collectors.joining(File.pathSeparator));
 
-            // Add zackbumm library jar to the runtime classpath
-            task.setClasspath(task.getClasspath().plus(project.files(zackBummLibraryJar())));
+            // Add hotswap library jar to the runtime classpath
+            task.setClasspath(task.getClasspath().plus(project.files(hotSwapLibraryJar())));
 
-            // Additional parameters to instruct the zackbumm devmode
+            // Additional parameters to instruct the hotswap devmode
             Map<String, String> configuration = new HashMap<>();
-            configuration.put("zackbumm.mainClass", task.getMainClass().get());
-            configuration.put("zackbumm.classDirectories", classDirectories);
-            configuration.put("zackbumm.packagePrefixes", String.join(",", packagePrefixes));
+            configuration.put("hotswap.mainClass", task.getMainClass().get());
+            configuration.put("hotswap.classDirectories", classDirectories);
+            configuration.put("hotswap.packagePrefixes", String.join(",", packagePrefixes));
             if (debounceDuration != null) {
-                configuration.put("zackbumm.debounceDuration", debounceDuration.toMillis() + "");
+                configuration.put("hotswap.debounceDuration", debounceDuration.toMillis() + "");
             }
             if (shutdownPollingInterval != null) {
-                configuration.put("zackbumm.shutdownPollingInterval", shutdownPollingInterval.toMillis() + "");
+                configuration.put("hotswap.shutdownPollingInterval", shutdownPollingInterval.toMillis() + "");
             }
             task.systemProperties(configuration);
 
             // Override the main class
-            task.getMainClass().set("io.github.raphiz.zackbumm.DevMode");
+            task.getMainClass().set("io.github.raphiz.hotswap.DevMode");
         });
     }
 
-    private static @NotNull JavaExec getTask(@NotNull Project target, ZackbummExtension extension) {
+    private static @NotNull JavaExec getTask(@NotNull Project target, HotswapExtension extension) {
         return target.getTasks().named(extension.getTaskName().get(), JavaExec.class).get();
     }
 
-    private File zackBummLibraryJar() {
+    private File hotSwapLibraryJar() {
         try {
-            String className = "io.github.raphiz.zackbumm.DevMode";
+            String className = "io.github.raphiz.hotswap.DevMode";
             Class<?> clazz = Class.forName(className);
 
             String classResource = className.replace('.', File.separatorChar) + ".class";

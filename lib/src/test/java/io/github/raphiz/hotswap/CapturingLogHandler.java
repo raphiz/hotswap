@@ -1,4 +1,4 @@
-package io.github.raphiz.zackbumm;
+package io.github.raphiz.hotswap;
 
 import java.util.Collections;
 import java.util.LinkedList;

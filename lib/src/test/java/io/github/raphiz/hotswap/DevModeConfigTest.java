@@ -1,4 +1,4 @@
-package io.github.raphiz.zackbumm;
+package io.github.raphiz.hotswap;
 
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static io.github.raphiz.zackbumm.DevMode.Configuration.parse;
+import static io.github.raphiz.hotswap.DevMode.Configuration.parse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -25,7 +25,7 @@ class DevModeConfigTest {
     @Test
     void setsMainClassProperly() {
         Map<String, String> properties = validConfigurationProperties();
-        properties.put("zackbumm.mainClass", "com.example.Foo");
+        properties.put("hotswap.mainClass", "com.example.Foo");
 
         DevMode.Configuration configuration = parse(properties, validArgs());
 
@@ -35,7 +35,7 @@ class DevModeConfigTest {
     @Test
     void setsSetOfPackagePrefixes() {
         Map<String, String> properties = validConfigurationProperties();
-        properties.put("zackbumm.packagePrefixes", "com.example,io.github.raphiz,foo.bar");
+        properties.put("hotswap.packagePrefixes", "com.example,io.github.raphiz,foo.bar");
 
         DevMode.Configuration configuration = parse(properties, validArgs());
 
@@ -45,7 +45,7 @@ class DevModeConfigTest {
     @Test
     void failsWhenPackagePrefixesIfNotProvided() {
         Map<String, String> properties = validConfigurationProperties();
-        properties.remove("zackbumm.packagePrefixes");
+        properties.remove("hotswap.packagePrefixes");
 
         assertThrows(IllegalArgumentException.class, () -> parse(properties, validArgs()));
     }
@@ -53,7 +53,7 @@ class DevModeConfigTest {
     @Test
     void setsSetOfClassDirectories() {
         Map<String, String> properties = validConfigurationProperties();
-        properties.put("zackbumm.classDirectories", "/path/to/foo" + File.pathSeparator + "/path/to/bar" + File.pathSeparator + "relative/path");
+        properties.put("hotswap.classDirectories", "/path/to/foo" + File.pathSeparator + "/path/to/bar" + File.pathSeparator + "relative/path");
 
         DevMode.Configuration configuration = parse(properties, validArgs());
 
@@ -63,7 +63,7 @@ class DevModeConfigTest {
     @Test
     void failsIfClassesOutputDirectoriesIfNotProvided() {
         Map<String, String> properties = validConfigurationProperties();
-        properties.remove("zackbumm.classDirectories");
+        properties.remove("hotswap.classDirectories");
 
         assertThrows(IllegalArgumentException.class, () -> parse(properties, validArgs()));
     }
@@ -71,7 +71,7 @@ class DevModeConfigTest {
     @Test
     void setsShutdownPollingInterval() {
         Map<String, String> properties = validConfigurationProperties();
-        properties.put("zackbumm.shutdownPollingInterval", Duration.ofSeconds(42).toMillis() + "");
+        properties.put("hotswap.shutdownPollingInterval", Duration.ofSeconds(42).toMillis() + "");
 
         DevMode.Configuration configuration = parse(properties, validArgs());
 
@@ -81,7 +81,7 @@ class DevModeConfigTest {
     @Test
     void shutdownPollingIntervalFailsForNonNumericValue() {
         Map<String, String> properties = validConfigurationProperties();
-        properties.put("zackbumm.shutdownPollingInterval", "abc");
+        properties.put("hotswap.shutdownPollingInterval", "abc");
 
         assertThrows(IllegalArgumentException.class, () -> parse(properties, validArgs()));
     }
@@ -89,7 +89,7 @@ class DevModeConfigTest {
     @Test
     void setsDefaultShutdownPollingIntervalForEmptyString() {
         Map<String, String> properties = validConfigurationProperties();
-        properties.put("zackbumm.shutdownPollingInterval", "");
+        properties.put("hotswap.shutdownPollingInterval", "");
 
         DevMode.Configuration configuration = parse(properties, validArgs());
 
@@ -99,7 +99,7 @@ class DevModeConfigTest {
     @Test
     void setsDefaultShutdownPollingIntervalIfNotProvided() {
         Map<String, String> properties = validConfigurationProperties();
-        properties.remove("zackbumm.shutdownPollingInterval");
+        properties.remove("hotswap.shutdownPollingInterval");
 
         DevMode.Configuration configuration = parse(properties, validArgs());
 
@@ -110,7 +110,7 @@ class DevModeConfigTest {
     @Test
     void setsDebounceDurationInterval() {
         Map<String, String> properties = validConfigurationProperties();
-        properties.put("zackbumm.debounceDuration", Duration.ofSeconds(42).toMillis() + "");
+        properties.put("hotswap.debounceDuration", Duration.ofSeconds(42).toMillis() + "");
 
         DevMode.Configuration configuration = parse(properties, validArgs());
 
@@ -120,7 +120,7 @@ class DevModeConfigTest {
     @Test
     void debounceDurationIntervalForNonNumericValue() {
         Map<String, String> properties = validConfigurationProperties();
-        properties.put("zackbumm.debounceDuration", "abc");
+        properties.put("hotswap.debounceDuration", "abc");
 
         assertThrows(IllegalArgumentException.class, () -> parse(properties, validArgs()));
     }
@@ -128,7 +128,7 @@ class DevModeConfigTest {
     @Test
     void setsDefaultForDebounceDurationIntervalForEmptyString() {
         Map<String, String> properties = validConfigurationProperties();
-        properties.put("zackbumm.debounceDuration", "");
+        properties.put("hotswap.debounceDuration", "");
 
         DevMode.Configuration configuration = parse(properties, validArgs());
 
@@ -138,7 +138,7 @@ class DevModeConfigTest {
     @Test
     void setsDefaultDebounceDurationIntervalIfNotProvided() {
         Map<String, String> properties = validConfigurationProperties();
-        properties.remove("zackbumm.debounceDuration");
+        properties.remove("hotswap.debounceDuration");
 
         DevMode.Configuration configuration = parse(properties, validArgs());
 
@@ -157,9 +157,9 @@ class DevModeConfigTest {
 
     private static Map<String, String> validConfigurationProperties() {
         return new HashMap<>(Map.of(
-                "zackbumm.mainClass", "com.example.MainClass",
-                "zackbumm.classDirectories", "build/classes",
-                "zackbumm.packagePrefixes", "com.example.foo.bar"
+                "hotswap.mainClass", "com.example.MainClass",
+                "hotswap.classDirectories", "build/classes",
+                "hotswap.packagePrefixes", "com.example.foo.bar"
         )
         );
     }

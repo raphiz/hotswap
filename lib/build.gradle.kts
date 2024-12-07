@@ -1,5 +1,5 @@
 plugins {
-    id("io.github.raphiz.zackbumm.java-library")
+    id("io.github.raphiz.hotswap.java-library")
     `java-test-fixtures`
 }
 

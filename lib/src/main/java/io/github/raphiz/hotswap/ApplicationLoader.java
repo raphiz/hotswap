@@ -1,4 +1,4 @@
-package io.github.raphiz.zackbumm;
+package io.github.raphiz.hotswap;
 
 import java.io.Closeable;
 import java.lang.reflect.Method;
@@ -27,7 +27,7 @@ public class ApplicationLoader {
     }
 
     public synchronized void start() {
-        Thread.currentThread().setName("zackbumm");
+        Thread.currentThread().setName("hotswap");
 
         logger.info("Starting Application " + mainClass);
 

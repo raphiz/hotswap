@@ -1,4 +1,4 @@
-package io.github.raphiz.zackbumm;
+package io.github.raphiz.hotswap;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,9 +33,9 @@ public class DevMode {
         }
 
         public static Configuration parse(Map<String, String> properties, String[] args) {
-            String mainClass = Objects.requireNonNull(properties.get("zackbumm.mainClass"), "Main class must be provided");
+            String mainClass = Objects.requireNonNull(properties.get("hotswap.mainClass"), "Main class must be provided");
 
-            Set<Path> classDirectories = Arrays.stream(properties.getOrDefault("zackbumm.classDirectories", "").split(File.pathSeparator))
+            Set<Path> classDirectories = Arrays.stream(properties.getOrDefault("hotswap.classDirectories", "").split(File.pathSeparator))
                     .filter((it) -> !it.isBlank())
                     .map(Path::of)
                     .collect(Collectors.toSet());
@@ -43,14 +43,14 @@ public class DevMode {
                 throw new IllegalArgumentException("At least one output directory to watch must be provided");
             }
 
-            Set<String> packagePrefixes = Arrays.stream(properties.getOrDefault("zackbumm.packagePrefixes", "").split(","))
+            Set<String> packagePrefixes = Arrays.stream(properties.getOrDefault("hotswap.packagePrefixes", "").split(","))
                     .filter((it) -> !it.isBlank())
                     .collect(Collectors.toSet());
             if (packagePrefixes.isEmpty()) {
                 throw new IllegalArgumentException("At least one package prefix must be provided");
             }
-            Duration shutdownPollingInterval = parseDuration(emptyToNull(properties.get("zackbumm.shutdownPollingInterval")), Duration.ofSeconds(5));
-            Duration debounceDuration = parseDuration(emptyToNull(properties.get("zackbumm.debounceDuration")), Duration.ofMillis(100));
+            Duration shutdownPollingInterval = parseDuration(emptyToNull(properties.get("hotswap.shutdownPollingInterval")), Duration.ofSeconds(5));
+            Duration debounceDuration = parseDuration(emptyToNull(properties.get("hotswap.debounceDuration")), Duration.ofMillis(100));
 
             return new Configuration(
                     mainClass,

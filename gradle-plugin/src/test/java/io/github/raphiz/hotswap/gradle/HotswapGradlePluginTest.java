@@ -1,6 +1,6 @@
-package io.github.raphiz.zackbumm.gradle;
+package io.github.raphiz.hotswap.gradle;
 
-import io.github.raphiz.zackbumm.GreeterAppWriter;
+import io.github.raphiz.hotswap.GreeterAppWriter;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,10 +13,10 @@ import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static io.github.raphiz.zackbumm.GreeterAppWriter.CLASS_NAME;
-import static io.github.raphiz.zackbumm.GreeterAppWriter.PACKAGE_PREFIX;
+import static io.github.raphiz.hotswap.GreeterAppWriter.CLASS_NAME;
+import static io.github.raphiz.hotswap.GreeterAppWriter.PACKAGE_PREFIX;
 
-class ZackbummGradlePluginTest {
+class HotswapGradlePluginTest {
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final GreeterAppWriter greeterAppWriter = new GreeterAppWriter();
@@ -67,7 +67,7 @@ class ZackbummGradlePluginTest {
         Files.writeString(buildFile, """
                 plugins {
                     application
-                    id("io.github.raphiz.zackbumm")
+                    id("io.github.raphiz.hotswap")
                 }
                 application {
                     mainClass.set("%s.%s")
@@ -75,7 +75,7 @@ class ZackbummGradlePluginTest {
                 repositories {
                     mavenCentral()
                 }
-                zackbumm {
+                hotswap {
                     packagePrefixes.set(listOf("com.example"));
                 }
                 

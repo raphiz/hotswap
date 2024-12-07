@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
 
-rootProject.name = "zackbumm"
+rootProject.name = "hotswap"
 include("lib", "gradle-plugin")
