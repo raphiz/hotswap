@@ -1,6 +1,11 @@
 plugins {
     `java-library`
+    id("com.palantir.git-version")
 }
+
+group = "io.github.raphiz.hotswap"
+val gitVersion: groovy.lang.Closure<String> by extra
+version = gitVersion()
 
 java {
     toolchain {
