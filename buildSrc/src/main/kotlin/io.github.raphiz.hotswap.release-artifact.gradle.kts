@@ -14,7 +14,14 @@ java {
 publishing {
     publications {
         register("mavenJava", MavenPublication::class) {
-            from(components["java"])
+            afterEvaluate {
+                // Do not publish test fixtures
+                val component = components["java"] as AdhocComponentWithVariants
+                listOf("testFixturesApiElements", "testFixturesRuntimeElements").forEach {
+                    component.withVariantsFromConfiguration(configurations[it]) { skip() }
+                }
+                from(component)
+            }
             pom {
                 name.set("${project.group}:${project.name}")
                 description.set(project.description)
