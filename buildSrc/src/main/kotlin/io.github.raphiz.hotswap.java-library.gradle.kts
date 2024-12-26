@@ -3,7 +3,7 @@ plugins {
     id("com.palantir.git-version")
 }
 
-group = "io.github.raphiz.hotswap"
+group = "io.github.raphiz"
 
 version =
     run {
