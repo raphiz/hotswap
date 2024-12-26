@@ -13,6 +13,13 @@ java {
     }
 }
 
+// The javadoc task is required to publish to maven central.
+// Javadoc has no priority for now - and we can therefore ignore/mute warnings
+tasks.withType<Javadoc> {
+    val opt = options as CoreJavadocOptions
+    opt.addStringOption("Xdoclint:none", "-quiet")
+}
+
 testing {
     suites {
         @Suppress("UnstableApiUsage")
