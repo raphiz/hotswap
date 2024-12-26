@@ -14,6 +14,7 @@ java {
 publishing {
     publications {
         register("mavenJava", MavenPublication::class) {
+            artifactId = "hotswap-${project.name}"
             afterEvaluate {
                 // Do not publish test fixtures
                 val component = components["java"] as AdhocComponentWithVariants
@@ -23,7 +24,7 @@ publishing {
                 from(component)
             }
             pom {
-                name.set("${project.group}:${project.name}")
+                name.set(artifactId)
                 description.set(project.description)
                 url.set("https://www.github.com/raphiz/hotswap")
 
