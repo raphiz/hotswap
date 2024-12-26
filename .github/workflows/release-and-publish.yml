@@ -17,14 +17,9 @@ jobs:
         run: |
           echo "version=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
       - name: Create Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ncipollo/release-action@v1
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release v${{ env.version }}
-          draft: false
-          prerelease: false
+          name: Release v${{ env.version }}
       - name: Publish package to Maven Central
         run: nix develop --impure --command gradle publishToSonatype
         env:
