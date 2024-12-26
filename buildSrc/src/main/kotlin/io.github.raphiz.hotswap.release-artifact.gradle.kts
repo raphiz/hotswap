@@ -22,10 +22,11 @@ publishing {
                     component.withVariantsFromConfiguration(configurations[it]) { skip() }
                 }
                 from(component)
+
+                pom.description = project.description
             }
             pom {
                 name.set(artifactId)
-                description.set(project.description)
                 url.set("https://www.github.com/raphiz/hotswap")
 
                 scm {
