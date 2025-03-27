@@ -2,5 +2,5 @@
 build
 .pre-commit-config.yaml
 .devenv
-.direnv
+.direnv/
 .idea
