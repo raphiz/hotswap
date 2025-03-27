@@ -1,4 +1,4 @@
-# Hotswap
+# ♨️ Hotswap
 
 A Java library and Gradle plugin that provides hot reloading capabilities for Java applications during development.
 This tool allows you to automatically restart your application when source code changes are detected.
@@ -18,3 +18,7 @@ Using `nix` and `direnv` to manage the dependencies and development environment.
 ```bash
 ./gradlew test
 ```
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
