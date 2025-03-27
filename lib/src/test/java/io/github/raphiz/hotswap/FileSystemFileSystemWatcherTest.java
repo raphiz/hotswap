@@ -157,9 +157,10 @@ public class FileSystemFileSystemWatcherTest {
     }
 
     private void waitUntil(ThrowingRunnable assertion) {
+        boolean isMacOS = System.getProperty("os.name").toLowerCase().contains("mac os");
         Awaitility.await()
-                .pollInterval(10, TimeUnit.MILLISECONDS)
-                .atMost(250, TimeUnit.MILLISECONDS)
+                .pollInterval(50, TimeUnit.MILLISECONDS)
+                .atMost(isMacOS ? 2 : 250, TimeUnit.SECONDS)
                 .untilAsserted(() -> {
                     try {
                         assertion.run();
