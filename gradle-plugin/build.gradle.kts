@@ -12,6 +12,10 @@ gradlePlugin {
     }
 }
 
+tasks.validatePlugins.configure {
+    enableStricterValidation = true
+}
+
 dependencies {
     implementation(project(":lib"))
     testImplementation(testFixtures(project(":lib")))
