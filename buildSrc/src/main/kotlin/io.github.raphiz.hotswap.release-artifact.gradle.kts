@@ -11,49 +11,6 @@ java {
     withSourcesJar()
 }
 
-publishing {
-    publications {
-        register("mavenJava", MavenPublication::class) {
-            artifactId = "hotswap-${project.name}"
-            afterEvaluate {
-                // Do not publish test fixtures
-                val component = components["java"] as AdhocComponentWithVariants
-                listOf("testFixturesApiElements", "testFixturesRuntimeElements").forEach {
-                    component.withVariantsFromConfiguration(configurations[it]) { skip() }
-                }
-                from(component)
-
-                pom.description = project.description
-            }
-            pom {
-                name.set(artifactId)
-                url.set("https://www.github.com/raphiz/hotswap")
-
-                scm {
-                    connection.set("scm:git:git://github.com/raphiz/hotswap.git")
-                    developerConnection.set("scm:git:ssh://github.com:raphiz/hotswap.git")
-                    url.set("https://www.github.com/raphiz/hotswap")
-                }
-
-                licenses {
-                    license {
-                        name.set("MIT License")
-                        url.set("https://opensource.org/licenses/mit-license")
-                    }
-                }
-
-                developers {
-                    developer {
-                        id.set("raphiz")
-                        name.set("Raphael Zimmermann")
-                        email.set("oss@raphael.li")
-                    }
-                }
-            }
-        }
-    }
-}
-
 signing {
     if (project.hasProperty("signingKey")) {
         val signingKey: String by project
