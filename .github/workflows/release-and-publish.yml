@@ -9,6 +9,7 @@ jobs:
   release-and-publish:
     name: Release and Publish
     runs-on: ubuntu-latest
+    if: github.event.repository.fork == false
     steps:
       - uses: actions/checkout@v4.2.0
       - uses: DeterminateSystems/nix-installer-action@v14
