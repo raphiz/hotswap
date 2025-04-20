@@ -1,5 +1,6 @@
 plugins {
     id("io.github.raphiz.hotswap.java-library")
+    id("io.github.raphiz.hotswap.release-artifact")
     id("com.gradle.plugin-publish") version "1.3.1"
     id("com.gradleup.shadow") version "8.3.6"
 }
