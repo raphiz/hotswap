@@ -18,7 +18,7 @@ public class HotswapGradlePlugin implements Plugin<Project> {
     public void apply(@NotNull Project target) {
         HotswapExtension extension = target.getExtensions().create("hotswap", HotswapExtension.class);
         extension.getTaskName().convention("run");
-        extension.getClassDirectories().convention(target.provider(() -> getTask(target, extension).getClasspath().filter((file) -> !file.isDirectory())));
+        extension.getClassDirectories().convention(target.provider(() -> getTask(target, extension).getClasspath()));
 
         target.afterEvaluate((project) -> {
             JavaExec task = getTask(project, extension);
