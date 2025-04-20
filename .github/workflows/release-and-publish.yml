@@ -21,6 +21,13 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           name: Release v${{ env.version }}
+      - name: Publish plugin to Gradle Plugin Portal
+        run: nix develop --impure --command gradle publishPlugins
+        env:
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.GPG_SECRET_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.GPG_KEY_PASSPHARASE }}
+          GRADLE_PUBLISH_KEY: ${{ secrets.GRADLE_PUBLISH_KEY }}
+          GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_PUBLISH_SECRET }}
       - name: Publish package to Maven Central
         run: nix develop --impure --command gradle publishToSonatype
         env:
