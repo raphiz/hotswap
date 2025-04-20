@@ -13,7 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.0
       - uses: DeterminateSystems/nix-installer-action@v14
-      - uses: DeterminateSystems/magic-nix-cache-action@v8
       - name: Calculate the release version
         run: |
           echo "version=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
