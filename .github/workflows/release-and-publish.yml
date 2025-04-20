@@ -17,9 +17,16 @@ jobs:
       - name: Calculate the release version
         run: |
           echo "version=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+      - name: Update CHANGELOG
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ github.token }}
+          tag: ${{ github.ref_name }}
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
+          body: ${{ steps.changelog.outputs.changes }}
           name: Release v${{ env.version }}
       - name: Publish plugin to Gradle Plugin Portal
         run: nix develop --impure --command gradle publishPlugins
