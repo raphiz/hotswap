@@ -11,10 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static io.github.raphiz.hotswap.DevMode.Configuration.parse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class DevModeConfigTest {
     @Test
@@ -46,11 +43,13 @@ class DevModeConfigTest {
     }
 
     @Test
-    void failsWhenPackagePrefixesIfNotProvided() {
+    void acceptsMissingEmptyPackagePrefixes() {
         Map<String, String> properties = validConfigurationProperties();
         properties.remove("hotswap.packagePrefixes");
 
-        assertThrows(IllegalArgumentException.class, () -> parse(properties, validArgs()));
+        DevMode.Configuration configuration = parse(properties, validArgs());
+
+        assertNull(configuration.packagePrefixes);
     }
 
     @Test

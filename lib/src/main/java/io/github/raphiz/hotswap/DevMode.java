@@ -35,20 +35,25 @@ public class DevMode {
         public static Configuration parse(Map<String, String> properties, String[] args) {
             String mainClass = Objects.requireNonNull(properties.get("hotswap.mainClass"), "Main class must be provided");
 
-             Set<Path> classPath = Arrays.stream(properties.getOrDefault("hotswap.classPath", System.getProperty("java.class.path")).split(File.pathSeparator))
-                     .filter((it) -> !it.isBlank())
-                     .map(Path::of)
-                     .collect(Collectors.toSet());
+            Set<Path> classPath = Arrays.stream(properties.getOrDefault("hotswap.classPath", System.getProperty("java.class.path")).split(File.pathSeparator))
+                    .filter((it) -> !it.isBlank())
+                    .map(Path::of)
+                    .collect(Collectors.toSet());
 
             if (classPath.isEmpty()) {
                 throw new IllegalArgumentException("At least one output directory to watch must be provided");
             }
 
-            Set<String> packagePrefixes = Arrays.stream(properties.getOrDefault("hotswap.packagePrefixes", "").split(","))
-                    .filter((it) -> !it.isBlank())
-                    .collect(Collectors.toSet());
-            if (packagePrefixes.isEmpty()) {
-                throw new IllegalArgumentException("At least one package prefix must be provided");
+            Set<String> packagePrefixes;
+            if (properties.get("hotswap.packagePrefixes") != null) {
+                packagePrefixes = Arrays.stream(properties.get("hotswap.packagePrefixes").split(","))
+                        .filter((it) -> !it.isBlank())
+                        .collect(Collectors.toSet());
+                if (packagePrefixes.isEmpty()) {
+                    packagePrefixes = null;
+                }
+            } else {
+                packagePrefixes = null;
             }
             Duration shutdownPollingInterval = parseDuration(emptyToNull(properties.get("hotswap.shutdownPollingInterval")), Duration.ofSeconds(5));
             Duration debounceDuration = parseDuration(emptyToNull(properties.get("hotswap.debounceDuration")), Duration.ofMillis(100));
