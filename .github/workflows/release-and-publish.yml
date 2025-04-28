@@ -35,7 +35,7 @@ jobs:
           GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_PUBLISH_SECRET }}
           PROJECT_VERSION: ${{ github.ref_name }}
       - name: Publish package to Maven Central
-        run: nix develop --impure --command gradle publishToSonatype
+        run: nix develop --impure --command gradle :lib:publishToSonatype
         env:
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.GPG_SECRET_KEY }}
           ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.GPG_KEY_PASSPHARASE }}
