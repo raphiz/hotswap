@@ -3,6 +3,7 @@ package io.github.raphiz.hotswap;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.HashMap;
@@ -11,7 +12,9 @@ import java.util.Set;
 
 import static io.github.raphiz.hotswap.DevMode.Configuration.parse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DevModeConfigTest {
     @Test
@@ -51,21 +54,25 @@ class DevModeConfigTest {
     }
 
     @Test
-    void setsSetOfClassDirectories() {
+    void setsClassPathBasedOfProperties() {
         Map<String, String> properties = validConfigurationProperties();
-        properties.put("hotswap.classDirectories", "/path/to/foo" + File.pathSeparator + "/path/to/bar" + File.pathSeparator + "relative/path");
+        properties.put("hotswap.classPath", "/path/to/foo" + File.pathSeparator + "/path/to/bar" + File.pathSeparator + "relative/path");
 
         DevMode.Configuration configuration = parse(properties, validArgs());
 
-        assertEquals(Set.of(Path.of("/path/to/foo"), Path.of("/path/to/bar"), Path.of("relative/path")), configuration.classDirectories);
+        assertEquals(Set.of(Path.of("/path/to/foo"), Path.of("/path/to/bar"), Path.of("relative/path")), configuration.classPath);
     }
 
     @Test
-    void failsIfClassesOutputDirectoriesIfNotProvided() {
+    void usesEntireClassPathIfClassesPathIsNotSet() {
         Map<String, String> properties = validConfigurationProperties();
-        properties.remove("hotswap.classDirectories");
+        properties.remove("hotswap.classPath");
 
-        assertThrows(IllegalArgumentException.class, () -> parse(properties, validArgs()));
+        DevMode.Configuration configuration = parse(properties, validArgs());
+
+        assertFalse(configuration.classPath.isEmpty());
+        assertTrue(configuration.classPath.stream().anyMatch(Files::isDirectory));
+        assertTrue(configuration.classPath.stream().allMatch(Files::exists));
     }
 
     @Test
@@ -158,7 +165,7 @@ class DevModeConfigTest {
     private static Map<String, String> validConfigurationProperties() {
         return new HashMap<>(Map.of(
                 "hotswap.mainClass", "com.example.MainClass",
-                "hotswap.classDirectories", "build/classes",
+                "hotswap.classPath", "build/classes",
                 "hotswap.packagePrefixes", "com.example.foo.bar"
         )
         );

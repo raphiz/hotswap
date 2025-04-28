@@ -19,15 +19,15 @@ public class DevMode {
         final String mainClass;
         final String[] args;
         final Set<String> packagePrefixes;
-        final Set<Path> classDirectories;
+        final Set<Path> classPath;
         final Duration shutdownPollingInterval;
         final Duration debounceDuration;
 
-        Configuration(String mainClass, String[] args, Set<String> packagePrefixes, Set<Path> classDirectories, Duration shutdownPollingInterval, Duration debounceDuration) {
+        Configuration(String mainClass, String[] args, Set<String> packagePrefixes, Set<Path> classPath, Duration shutdownPollingInterval, Duration debounceDuration) {
             this.mainClass = mainClass;
             this.args = args;
             this.packagePrefixes = packagePrefixes;
-            this.classDirectories = classDirectories;
+            this.classPath = classPath;
             this.shutdownPollingInterval = shutdownPollingInterval;
             this.debounceDuration = debounceDuration;
         }
@@ -35,11 +35,12 @@ public class DevMode {
         public static Configuration parse(Map<String, String> properties, String[] args) {
             String mainClass = Objects.requireNonNull(properties.get("hotswap.mainClass"), "Main class must be provided");
 
-            Set<Path> classDirectories = Arrays.stream(properties.getOrDefault("hotswap.classDirectories", "").split(File.pathSeparator))
-                    .filter((it) -> !it.isBlank())
-                    .map(Path::of)
-                    .collect(Collectors.toSet());
-            if (classDirectories.isEmpty()) {
+             Set<Path> classPath = Arrays.stream(properties.getOrDefault("hotswap.classPath", System.getProperty("java.class.path")).split(File.pathSeparator))
+                     .filter((it) -> !it.isBlank())
+                     .map(Path::of)
+                     .collect(Collectors.toSet());
+
+            if (classPath.isEmpty()) {
                 throw new IllegalArgumentException("At least one output directory to watch must be provided");
             }
 
@@ -56,7 +57,7 @@ public class DevMode {
                     mainClass,
                     args,
                     packagePrefixes,
-                    classDirectories,
+                    classPath,
                     shutdownPollingInterval,
                     debounceDuration
             );
@@ -77,11 +78,11 @@ public class DevMode {
 
     public static void startDevMode(Configuration configuration) throws IOException {
         // TODO: Later -> Add support for jars (gradle modules)
-        URL[] classPathUrls = configuration.classDirectories.stream()
+        URL[] classPathUrls = configuration.classPath.stream()
                 .map(DevMode::toUrl)
                 .toArray(URL[]::new);
 
-        List<PathMatcher> restartMatchers = configuration.classDirectories.stream()
+        List<PathMatcher> restartMatchers = configuration.classPath.stream()
                 .map(Path::toAbsolutePath)
                 .map(it -> FileSystems.getDefault().getPathMatcher("glob:" + it + "/**"))
                 .toList();
@@ -100,7 +101,7 @@ public class DevMode {
             applicationLoader.restart();
         });
 
-        new FileSystemWatcher(configuration.classDirectories, fileSystemEvent -> {
+        new FileSystemWatcher(configuration.classPath, fileSystemEvent -> {
             if (restartMatchers.stream().anyMatch(matcher -> matcher.matches(fileSystemEvent.path()))) {
                 // Skip delete events for class files during recompilation
                 if (fileSystemEvent.eventType() != EventType.DELETED) {

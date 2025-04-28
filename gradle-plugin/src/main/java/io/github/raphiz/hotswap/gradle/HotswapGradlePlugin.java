@@ -2,6 +2,7 @@ package io.github.raphiz.hotswap.gradle;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.JavaExec;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,17 +19,18 @@ public class HotswapGradlePlugin implements Plugin<Project> {
     public void apply(@NotNull Project target) {
         HotswapExtension extension = target.getExtensions().create("hotswap", HotswapExtension.class);
         extension.getTaskName().convention("run");
-        extension.getClassDirectories().convention(target.provider(() -> getTask(target, extension).getClasspath()));
 
         target.afterEvaluate((project) -> {
             JavaExec task = getTask(project, extension);
             List<String> packagePrefixes = extension.getPackagePrefixes().get();
             Duration debounceDuration = extension.getDebounceDuration().getOrNull();
             Duration shutdownPollingInterval = extension.getShutdownPollingInterval().getOrNull();
-            String classDirectories = extension.getClassDirectories().get().getFiles()
-                    .stream()
-                    .map(File::getAbsolutePath)
-                    .collect(Collectors.joining(File.pathSeparator));
+            Provider<String> classPath = extension.getClassPath().map(it ->
+                    it.getFiles()
+                            .stream()
+                            .map(File::getAbsolutePath)
+                            .collect(Collectors.joining(File.pathSeparator))
+            );
 
             // Add hotswap library jar to the runtime classpath
             task.setClasspath(task.getClasspath().plus(project.files(hotSwapLibraryJar())));
@@ -36,7 +38,9 @@ public class HotswapGradlePlugin implements Plugin<Project> {
             // Additional parameters to instruct the hotswap devmode
             Map<String, String> configuration = new HashMap<>();
             configuration.put("hotswap.mainClass", task.getMainClass().get());
-            configuration.put("hotswap.classDirectories", classDirectories);
+            if(classPath.isPresent()) {
+                configuration.put("hotswap.classPath", classPath.get());
+            }
             configuration.put("hotswap.packagePrefixes", String.join(",", packagePrefixes));
             if (debounceDuration != null) {
                 configuration.put("hotswap.debounceDuration", debounceDuration.toMillis() + "");

@@ -9,7 +9,7 @@ import java.time.Duration;
 public interface HotswapExtension {
     Property<String> getTaskName();
 
-    Property<FileCollection> getClassDirectories();
+    Property<FileCollection> getClassPath();
 
     Property<Duration> getDebounceDuration();
 

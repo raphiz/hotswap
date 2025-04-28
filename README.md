@@ -57,22 +57,23 @@ hotswap {
 
 ### Gradle Plugin Options
 
-| Option             | Type           | Description                                          | Required | Default          |
-| ------------------ | -------------- | ---------------------------------------------------- | -------- | ---------------- |
-| `packagePrefixes`  | `List<String>` | package names of the actively developed classes      | yes      | -                |
-| `task`             | `String`       | Name of the gradle task used to run your application | no       | `run`            |
-| `classDirectories` | `List<Path>`   | Directories to watch for changes                     | no       | Task's classpath |
-| `debounceDuration` | `Duration`     | Aggregation period for rapid file changes            | no       | `100ms`          |
+| Option                    | Type           | Description                                                                | Required | Default                                 |
+|---------------------------|----------------|----------------------------------------------------------------------------|----------|-----------------------------------------|
+| `taskName`                | `String`       | Name of the gradle task used to run your application                       | no       | `run`                                   |
+| `packagePrefixes`         | `List<String>` | Classes in this package namespace are hot swapped while all others are not | yes      | -                                       |
+| `classPath`               | `List<Path>`   | Directories and Files to watch for changes                                 | no       | `System.getProperty("java.class.path")` |
+| `shutdownPollingInterval` | `Duration`     | Interval before logging warnings during shutdown                           | no       | `5s`                                    |
+| `debounceDuration`        | `Duration`     | Aggregation delay for rapid file changes                                   | no       | `100ms`                                 |
 
 ### Library Options
 
-| Option                    | Type          | Description                                      | Required | Default |
-| ------------------------- | ------------- | ------------------------------------------------ | -------- | ------- |
-| `mainClass`               | `String`      | Your application's main class                    | yes      | -       |
-| `packagePrefixes`         | `Set<String>` | Packages included for reload monitoring          | yes      | -       |
-| `classDirectories`        | `Set<Path>`   | Directories watched for class updates            | yes      | -       |
-| `shutdownPollingInterval` | `Duration`    | Interval before logging warnings during shutdown | no       | `5s`    |
-| `debounceDuration`        | `Duration`    | Aggregation delay for rapid file changes         | no       | `100ms` |
+| Option                    | Type            | Description                                                                | Required | Default                                 |
+|---------------------------|-----------------|----------------------------------------------------------------------------|----------|-----------------------------------------|
+| `mainClass`               | `String`        | Your application's main class                                              | yes      | -                                       |
+| `packagePrefixes`         | `List<String>`  | Classes in this package namespace are hot swapped while all others are not | yes      | -                                       |
+| `classPath`               | `Set<Path>`     | Directories and Files to watch for changes                                 | no       | `System.getProperty("java.class.path")` |
+| `shutdownPollingInterval` | `Duration`      | Interval before logging warnings during shutdown                           | no       | `5s`                                    |
+| `debounceDuration`        | `Duration`      | Aggregation delay for rapid file changes                                   | no       | `100ms`                                 |
 
 ## 📦 Trigger Restarts
 
