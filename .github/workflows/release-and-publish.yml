@@ -13,20 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.0
       - uses: DeterminateSystems/nix-installer-action@v14
-      - name: Calculate the release version
-        run: |
-          echo "version=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
-      - name: Update CHANGELOG
-        id: changelog
-        uses: requarks/changelog-action@v1
-        with:
-          token: ${{ github.token }}
-          tag: ${{ github.ref_name }}
-      - name: Create Release
-        uses: ncipollo/release-action@v1
-        with:
-          body: ${{ steps.changelog.outputs.changes }}
-          name: Release v${{ env.version }}
       - name: Publish plugin to Gradle Plugin Portal
         run: nix develop --impure --command gradle publishPlugins
         env:
@@ -41,3 +27,17 @@ jobs:
           ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.GPG_KEY_PASSPHARASE }}
           ORG_GRADLE_PROJECT_ossrhUsername: ${{ secrets.OSSRH_USERNAME }}
           ORG_GRADLE_PROJECT_ossrhPassword: ${{ secrets.OSSRH_PASSWORD }}
+      - name: Calculate the release version
+        run: |
+          echo "version=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+      - name: Update CHANGELOG
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ github.token }}
+          tag: ${{ github.ref_name }}
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          body: ${{ steps.changelog.outputs.changes }}
+          name: Release v${{ env.version }}
