@@ -1,60 +1,27 @@
 {
-  /*
-  This flake contains all boilerplate and rarely needs to be looked at
-  Actual configuration is done in the following, externalized files:
-
-  ./nix/configuration.ci.nix: minimal dependencies required on CI system
-  ./nix/configuration.dev.nix: dependencies for local development
-  ./nix/overlay.nix: customization of nixpkgs
-  */
-
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/master";
-    devenv.url = "github:cachix/devenv";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    #required for building linux container images
-    #otherwise `nix flake show --impure` fails to evaluate
-    nix2container.url = "github:nlewo/nix2container";
-    mk-shell-bin.url = "github:rrbutani/nix-mk-shell-bin";
+    systems.url = "github:nix-systems/default";
+
+    blueprint.url = "github:numtide/blueprint";
+    blueprint.inputs.nixpkgs.follows = "nixpkgs";
+    blueprint.inputs.systems.follows = "systems";
+
+    devshell.url = "github:numtide/devshell";
+    devshell.inputs.nixpkgs.follows = "nixpkgs";
+
+    git-hooks-nix.url = "github:cachix/git-hooks.nix";
   };
-
-  outputs = inputs @ {
-    self,
-    flake-parts,
-    ...
-  }:
-    flake-parts.lib.mkFlake {inherit inputs;} {
-      systems = ["x86_64-linux" "x86_64-darwin" "aarch64-darwin" "aarch64-linux"];
-      imports = [inputs.devenv.flakeModule];
-      perSystem = {
-        config,
-        self',
-        inputs',
-        pkgs,
-        system,
-        ...
-        # Per-system attributes can be defined here. The self' and inputs'
-        # module parameters provide easy access to attributes of the same
-        # system. Documentation: https://flake.parts/module-arguments.html
-        # inputs': https://flake.parts/module-arguments.html#inputs
-        # self': https://flake.parts/module-arguments.html#self
-      }: {
-        # define development shells
-        devenv.shells.ci = import ./nix/configuration.ci.nix;
-        devenv.shells.dev = import ./nix/configuration.dev.nix;
-        devShells.default = self'.devShells.dev;
-
-        # The following snippet is needed when using overlays.
-        # The overlay can be inlined or referenced from flake.overlays.*
-        # Explanation: https://flake.parts/overlays.html#consuming-an-overlay
-        _module.args.pkgs = import self.inputs.nixpkgs {
-          inherit system;
-          overlays = [self.overlays.default];
-          config.allowUnfree = true;
-        };
-      };
-      flake = {
-        overlays.default = import ./nix/overlay.nix;
-      };
+  outputs = inputs:
+    inputs.blueprint {
+      inherit inputs;
+      prefix = "nix";
+      nixpkgs.overlays = [
+        (final: prev: {
+          jdk = prev.jdk17_headless;
+          jre_headless = final.jdk;
+        })
+      ];
     };
 }

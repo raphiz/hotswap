@@ -1,6 +1,19 @@
-.gradle
-build
-.pre-commit-config.yaml
-.devenv
+# direnv
 .direnv/
-.idea
+.envrc.local
+
+# nix
+result
+result-*
+
+# pre-commit
+.pre-commit-config.yaml
+
+# gradle
+.gradle/
+build/
+
+# intelliJ
+out/
+.idea/
+
