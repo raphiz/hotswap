@@ -17,5 +17,13 @@ inputs.git-hooks-nix.lib.${system}.run {
       files = "\\.(kt|kts)$";
       language = "system";
     };
+
+    markdownlint = {
+      enable = true;
+      settings.configuration = {
+        # Line length does not matter
+        "MD013" = false;
+      };
+    };
   };
 }
